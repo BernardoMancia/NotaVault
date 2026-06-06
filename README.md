@@ -38,24 +38,38 @@ Aplicação web segura para captura, transcrição (via Google Gemini AI) e gere
 | Auth | JWT + bcrypt + TOTP (otpauth) |
 | Email | Nodemailer (Gmail SMTP) |
 | Images | sharp (compression) + multer (upload) |
+| Deploy | Docker + Docker Compose |
 
 ## Setup / Configuração
 
 ### Prerequisites / Pré-requisitos
-- Node.js >= 18.x
+- Node.js >= 18.x (local) or Docker (production)
 - Google AI Studio API Key ([aistudio.google.com](https://aistudio.google.com))
 - Gmail App Password ([myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords))
 
-### Installation / Instalação
+### Local Installation / Instalação Local
 
 ```bash
 git clone <repository-url>
-cd sites-de-notas
+cd NotaVault
 cp .env.example .env
 # Edit .env with your credentials / Edite o .env com suas credenciais
 npm install
 npm start
 ```
+
+### Docker Deployment / Deploy com Docker
+
+```bash
+git clone <repository-url>
+cd NotaVault
+cp .env.example .env
+# Edit .env with your credentials / Edite o .env com suas credenciais
+docker compose up -d --build
+```
+
+Persistent data is stored in `./data/` (database) and `./uploads/` (images).
+Dados persistentes ficam em `./data/` (banco) e `./uploads/` (imagens).
 
 ### Environment Variables / Variáveis de Ambiente
 
@@ -100,6 +114,8 @@ Copie `.env.example` para `.env` e preencha:
 
 ```
 notavault/
+├── Dockerfile
+├── docker-compose.yml
 ├── server.js                     # Entry point
 ├── src/
 │   ├── config/                   # Database, email, Gemini config
@@ -111,6 +127,7 @@ notavault/
 │   ├── css/styles.css            # Complete design system
 │   ├── *.html                    # Pages (login, register, dashboard, admin, MFA)
 │   └── js/                       # Frontend logic
+├── data/                         # SQLite database (gitignored)
 └── uploads/                      # Compressed images (gitignored)
 ```
 

@@ -1,6 +1,7 @@
 .env
 node_modules/
 uploads/
+data/
 *.db
 *.db-journal
 *.db-wal
