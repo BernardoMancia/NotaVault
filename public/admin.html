@@ -773,20 +773,17 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 9000;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       padding: 2rem;
       opacity: 0;
       visibility: hidden;
-      transition: var(--transition);
-    }
-
-    .modal-overlay[hidden] {
-      display: none;
+      transition: opacity 0.3s, visibility 0.3s;
     }
 
     .modal-overlay.active {
+      display: flex;
       opacity: 1;
       visibility: visible;
     }
@@ -1330,7 +1327,7 @@
     </main>
   </div>
 
-  <div class="modal-overlay" id="create-user-modal" hidden>
+  <div class="modal-overlay" id="create-user-modal">
     <div class="modal glass-card">
       <h2>Novo Usuário</h2>
       <form id="create-user-form">
@@ -1350,7 +1347,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="receipts-modal" hidden>
+  <div class="modal-overlay" id="receipts-modal">
     <div class="modal modal-wide glass-card">
       <div class="modal-header">
         <h2 id="receipts-modal-title">Notas do Usuário</h2>
@@ -1376,7 +1373,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="confirm-modal" hidden>
+  <div class="modal-overlay" id="confirm-modal">
     <div class="modal glass-card">
       <h2>Confirmação</h2>
       <p id="confirm-message"></p>
@@ -1387,7 +1384,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="email-modal" hidden>
+  <div class="modal-overlay" id="email-modal">
     <div class="modal glass-card">
       <h2>Alterar Email</h2>
       <div class="form-group">

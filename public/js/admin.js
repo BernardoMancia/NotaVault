@@ -331,15 +331,11 @@ function getCurrentFilter() {
 }
 
 function openModal(id) {
-  const modal = document.getElementById(id);
-  modal.removeAttribute('hidden');
-  modal.classList.add('active');
+  document.getElementById(id).classList.add('active');
 }
 
 function closeModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.remove('active');
-  setTimeout(() => { modal.setAttribute('hidden', ''); }, 300);
+  document.getElementById(id).classList.remove('active');
 }
 
 function showConfirm(message, callback) {

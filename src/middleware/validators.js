@@ -37,15 +37,16 @@ const registerValidator = [
     .withMessage('E-mail inválido')
     .normalizeEmail(),
   body('password')
-    .isLength({ min: 12 })
-    .withMessage('Senha deve ter no mínimo 12 caracteres'),
-  body('confirmPassword')
-    .custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error('Confirmação de senha não confere');
-      }
-      return true;
-    }),
+    .isLength({ min: 8 })
+    .withMessage('Senha deve ter no mínimo 8 caracteres')
+    .matches(/[A-Z]/)
+    .withMessage('Senha deve conter pelo menos uma letra maiúscula')
+    .matches(/[a-z]/)
+    .withMessage('Senha deve conter pelo menos uma letra minúscula')
+    .matches(/[0-9]/)
+    .withMessage('Senha deve conter pelo menos um dígito')
+    .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
+    .withMessage('Senha deve conter pelo menos um caractere especial'),
   validate
 ];
 
