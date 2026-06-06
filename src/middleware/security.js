@@ -15,10 +15,14 @@ const helmetMiddleware = helmet({
       mediaSrc: ["'self'", "blob:"],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
-      baseUri: ["'self'"]
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: null
     }
   },
-  crossOriginEmbedderPolicy: false
+  hsts: false,
+  crossOriginEmbedderPolicy: false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 });
 
 const generalLimiter = rateLimit({
