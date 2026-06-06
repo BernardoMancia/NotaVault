@@ -25,9 +25,9 @@ const helmetMiddleware = helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 });
 
-const generalLimiter = rateLimit({
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Muitas requisições. Tente novamente em 15 minutos.' }
@@ -67,9 +67,8 @@ const urlencodedParser = express.urlencoded({ extended: true, limit: '10mb' });
 const securityMiddleware = [
   helmetMiddleware,
   corsMiddleware,
-  generalLimiter,
   jsonParser,
   urlencodedParser
 ];
 
-module.exports = { securityMiddleware, loginLimiter, uploadLimiter };
+module.exports = { securityMiddleware, apiLimiter, loginLimiter, uploadLimiter };

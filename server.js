@@ -5,14 +5,21 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { db, initDatabase } = require('./src/config/database');
-const { securityMiddleware } = require('./src/middleware/security');
+const { securityMiddleware, apiLimiter } = require('./src/middleware/security');
 
 const app = express();
 
 securityMiddleware.forEach(mw => app.use(mw));
 
 app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  lastModified: false,
   setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
     if (filePath.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css; charset=UTF-8');
     } else if (filePath.endsWith('.js')) {
@@ -21,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
+app.use('/api', apiLimiter);
 app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/admin', require('./src/routes/admin.routes'));
 app.use('/api/receipts', require('./src/routes/receipts.routes'));
@@ -37,6 +45,8 @@ const cleanRoutes = {
 
 Object.entries(cleanRoutes).forEach(([route, file]) => {
   app.get(route, (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
     res.sendFile(path.join(__dirname, 'public', file));
   });
 });
