@@ -304,11 +304,11 @@ router.delete('/users/:id', (req, res) => {
     const userId = parseInt(req.params.id, 10);
 
     if (userId === req.user.id) {
-      return res.status(400).json({ error: 'Não é possível desativar a própria conta' });
+      return res.status(400).json({ error: 'Não é possível remover a própria conta' });
     }
 
     const user = db.prepare(
-      'SELECT * FROM users WHERE id = ? AND is_active = 1'
+      'SELECT * FROM users WHERE id = ?'
     ).get(userId);
 
     if (!user) {
@@ -316,14 +316,14 @@ router.delete('/users/:id', (req, res) => {
     }
 
     db.prepare(
-      'UPDATE users SET is_active = 0, updated_at = datetime(\'now\') WHERE id = ?'
+      'UPDATE users SET is_active = 0, is_approved = 0, updated_at = datetime(\'now\') WHERE id = ?'
     ).run(userId);
 
-    logAudit(req.user.id, 'ADMIN_DEACTIVATE_USER', { targetUserId: userId, targetUser: user.username }, req);
+    logAudit(req.user.id, 'ADMIN_REMOVE_USER', { targetUserId: userId, targetUser: user.username }, req);
 
-    res.json({ message: 'Usuário desativado com sucesso' });
+    res.json({ message: 'Usuário removido com sucesso' });
   } catch (err) {
-    console.error('Erro ao desativar usuário:', err.message);
+    console.error('Erro ao remover usuário:', err.message);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

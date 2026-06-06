@@ -548,8 +548,53 @@
       z-index: 10000;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      pointer-events: none;
     }
+
+    .toast {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      font-size: 0.875rem;
+      min-width: 320px;
+      max-width: 440px;
+      animation: slideInRight 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toast::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: currentColor;
+      animation: toastProgress 5s linear forwards;
+    }
+
+    .toast-success { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2); color: var(--accent-green); }
+    .toast-error { background: rgba(255,51,102,0.08); border-color: rgba(255,51,102,0.2); color: var(--accent-red); }
+    .toast-info { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.2); color: var(--accent-cyan); }
+    .toast-warning { background: rgba(255,107,53,0.08); border-color: rgba(255,107,53,0.2); color: var(--accent-orange); }
+
+    .toast.removing { animation: slideOutRight 0.3s forwards; }
+
+    .toast-icon { flex-shrink: 0; }
+    .toast-icon svg { width: 20px; height: 20px; }
+    .toast-message { flex: 1; color: var(--text-primary); }
+    .toast-close { flex-shrink: 0; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+    .toast-close:hover { opacity: 1; }
+
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
+    @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
 
     @media (max-width: 1024px) {
       .stats-grid {
@@ -739,6 +784,9 @@
             <tbody id="user-receipts-tbody"></tbody>
           </table>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('receipts-modal')">Fechar</button>
       </div>
     </div>
   </div>

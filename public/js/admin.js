@@ -347,8 +347,10 @@ function showConfirm(message, callback) {
   btn.parentNode.replaceChild(newBtn, btn);
 
   newBtn.addEventListener('click', async function() {
-    await callback();
     closeModal('confirm-modal');
+    try {
+      await callback();
+    } catch (_) {}
   });
 }
 
