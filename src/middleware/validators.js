@@ -50,9 +50,9 @@ const registerValidator = [
 ];
 
 const passwordValidator = [
-  body('newPassword')
-    .isLength({ min: 12 })
-    .withMessage('Nova senha deve ter no mínimo 12 caracteres')
+  body('new_password')
+    .isLength({ min: 8 })
+    .withMessage('Nova senha deve ter no mínimo 8 caracteres')
     .matches(/[A-Z]/)
     .withMessage('Nova senha deve conter pelo menos uma letra maiúscula')
     .matches(/[a-z]/)
@@ -61,13 +61,6 @@ const passwordValidator = [
     .withMessage('Nova senha deve conter pelo menos um dígito')
     .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
     .withMessage('Nova senha deve conter pelo menos um caractere especial'),
-  body('confirmPassword')
-    .custom((value, { req }) => {
-      if (value !== req.body.newPassword) {
-        throw new Error('Confirmação de senha não confere');
-      }
-      return true;
-    }),
   validate
 ];
 
