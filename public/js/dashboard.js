@@ -203,8 +203,20 @@ function setupEventListeners() {
       document.querySelectorAll('.content-section').forEach(function(sec) {
         sec.style.display = 'none';
       });
-      var target = document.getElementById('section-' + section);
-      if (target) target.style.display = 'block';
+
+      if (section === 'receipts') {
+        document.getElementById('section-dashboard').style.display = 'block';
+        var tableEl = document.getElementById('table-wrapper');
+        if (tableEl) tableEl.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        var target = document.getElementById('section-' + section);
+        if (target) target.style.display = 'block';
+      }
+
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebar-overlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('active');
     });
   });
 

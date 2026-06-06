@@ -102,11 +102,20 @@
     @keyframes slideOutRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100px)}}
     @keyframes toastProgress{from{width:100%}to{width:0%}}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main-content{margin-left:0}.content-area{padding:1rem}.stat-cards{grid-template-columns:1fr}.filter-bar-row{flex-direction:column}}
+    .sidebar-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:200;padding:0.6rem;border-radius:var(--radius-sm);background:rgba(18,18,26,0.9);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;backdrop-filter:blur(10px)}.sidebar-toggle svg{width:22px;height:22px}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:90}
+    .sidebar-overlay.active{display:block}
+    .sidebar.open{transform:translateX(0)}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar-toggle{display:flex}.main-content{margin-left:0}.content-area{padding:1rem}.header{padding:0 1rem;padding-left:3.5rem}.stat-cards{grid-template-columns:1fr}.filter-bar-row{flex-direction:column}.data-table-wrapper{overflow-x:auto}}
   </style>
 </head>
 <body>
   <div class="app-layout">
+
+    <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
@@ -131,14 +140,14 @@
       </div>
 
       <nav class="sidebar-nav">
-        <a href="/dashboard" class="sidebar-nav-item active" data-page="dashboard" id="nav-dashboard">
+        <a href="#" class="sidebar-nav-item active" data-section="dashboard" id="nav-dashboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
           Dashboard
         </a>
-        <a href="#" class="sidebar-nav-item" data-page="receipts" id="nav-receipts">
+        <a href="#" class="sidebar-nav-item" data-section="receipts" id="nav-receipts">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
@@ -148,7 +157,7 @@
           </svg>
           Minhas Notas
         </a>
-        <a href="/settings" class="sidebar-nav-item" data-page="settings" id="nav-settings">
+        <a href="#" class="sidebar-nav-item" data-section="settings" id="nav-settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -196,7 +205,7 @@
         </div>
       </header>
 
-      <div class="content-area" id="dashboard-section">
+      <div class="content-area content-section" id="section-dashboard">
 
         <section class="stat-cards">
           <div class="stat-card" id="stat-today-count" style="--stat-accent: rgba(0, 212, 255, 0.2);">
@@ -210,7 +219,7 @@
             </div>
             <div class="stat-card-info">
               <div class="stat-card-label">Notas Hoje</div>
-              <div class="stat-card-value cyan" id="today-count">0</div>
+              <div class="stat-card-value cyan" id="stat-daily-count">0</div>
             </div>
           </div>
 
@@ -223,7 +232,7 @@
             </div>
             <div class="stat-card-info">
               <div class="stat-card-label">Gasto Hoje</div>
-              <div class="stat-card-value green text-mono" id="today-value">R$ 0,00</div>
+              <div class="stat-card-value green text-mono" id="stat-daily-value">R$ 0,00</div>
             </div>
           </div>
 
@@ -238,7 +247,7 @@
             </div>
             <div class="stat-card-info">
               <div class="stat-card-label">Gasto do Mês</div>
-              <div class="stat-card-value purple text-mono" id="month-value">R$ 0,00</div>
+              <div class="stat-card-value purple text-mono" id="stat-monthly-value">R$ 0,00</div>
             </div>
           </div>
         </section>
@@ -280,13 +289,13 @@
           </div>
           <div class="upload-zone-text">Arraste e solte a imagem aqui</div>
           <div class="upload-zone-subtext">ou clique para selecionar — PNG, JPG, WebP até 10MB</div>
-          <div class="upload-progress" id="upload-progress-wrapper">
+          <div class="upload-progress" id="upload-progress">
             <div class="upload-progress-text">
               <span id="upload-status">Enviando...</span>
               <span id="upload-percent">0%</span>
             </div>
             <div class="progress-bar">
-              <div class="progress-fill" id="upload-progress" style="width: 0%;"></div>
+              <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
             </div>
           </div>
         </div>
@@ -393,7 +402,7 @@
 
         <div id="pagination" class="pagination"></div>
 
-        <div id="empty-state" class="empty-state" hidden>
+        <div id="empty-state" class="empty-state" style="display:none;">
           <div class="empty-state-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -407,7 +416,7 @@
 
       </div>
 
-      <div class="content-area" id="settings-section" hidden>
+      <div class="content-area content-section" id="section-settings" style="display:none;">
         <h2 class="header-title" style="margin-bottom: 1.5rem;">Configurações</h2>
 
         <div class="glass-card" style="margin-bottom: 1.5rem;">
@@ -431,7 +440,7 @@
 
         <div class="glass-card">
           <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem;">Alterar Senha</h3>
-          <form id="change-password-form" method="POST" action="javascript:void(0)" autocomplete="off">
+          <form id="settings-change-password-form" method="POST" action="javascript:void(0)" autocomplete="off">
             <div class="input-group">
               <label class="form-label" for="settings-current-password">Senha Atual</label>
               <div class="input-with-icon">
@@ -501,7 +510,7 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="btn-change-password">
+            <button type="submit" class="btn btn-primary" id="settings-change-password-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
