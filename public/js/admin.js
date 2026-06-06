@@ -195,7 +195,7 @@ function changeEmail(id) {
     try {
       await api(`/api/admin/users/${id}/email`, {
         method: 'PATCH',
-        body: JSON.stringify({ email: newEmail })
+        body: { email: newEmail }
       });
       showToast('Email alterado com sucesso', 'success');
       closeModal('email-modal');
@@ -302,7 +302,7 @@ function setupCreateUserForm() {
     try {
       await api('/api/admin/users', {
         method: 'POST',
-        body: JSON.stringify({ username, email })
+        body: { username, email }
       });
       showToast('Usuário criado. Senha temporária enviada por email.', 'success');
       closeModal('create-user-modal');
@@ -332,14 +332,14 @@ function getCurrentFilter() {
 
 function openModal(id) {
   const modal = document.getElementById(id);
-  modal.hidden = false;
-  modal.style.display = 'flex';
+  modal.removeAttribute('hidden');
+  modal.classList.add('active');
 }
 
 function closeModal(id) {
   const modal = document.getElementById(id);
-  modal.hidden = true;
-  modal.style.display = 'none';
+  modal.classList.remove('active');
+  setTimeout(() => { modal.setAttribute('hidden', ''); }, 300);
 }
 
 function showConfirm(message, callback) {
@@ -364,4 +364,9 @@ function setupModalOverlays() {
       }
     });
   });
+}
+
+function logout() {
+  clearToken();
+  window.location.href = '/login';
 }
