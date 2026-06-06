@@ -12,6 +12,54 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%2333ddff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M16 2L4 8v8c0 7.2 5.1 13.9 12 16 6.9-2.1 12-8.8 12-16V8L16 2z' fill='url(%23g)' opacity='0.9'/%3E%3Cpath d='M14 17l-3-3-1.5 1.5L14 20l7-7-1.5-1.5L14 17z' fill='%230a0a0f'/%3E%3C/svg%3E">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #0a0a0f; --bg-secondary: #12121a; --bg-card: rgba(255,255,255,0.03);
+      --border-color: rgba(255,255,255,0.05); --border-hover: rgba(255,255,255,0.1);
+      --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #64748b;
+      --accent-cyan: #00d4ff; --accent-green: #00ff88; --accent-red: #ff3366; --accent-orange: #ff6b35;
+      --glow-cyan: 0 0 20px rgba(0,212,255,0.3);
+      --radius: 12px; --radius-lg: 16px; --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary)); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+    a { color: var(--accent-cyan); text-decoration: none; }
+    input, button { font-family: inherit; font-size: inherit; outline: none; border: none; background: none; color: inherit; }
+    button { cursor: pointer; }
+    ul { list-style: none; }
+    .auth-layout { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative; overflow: hidden; }
+    .auth-layout::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%); }
+    .auth-layout::after { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(0,212,255,0.08), transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; animation: pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideOutRight { from { opacity: 1; } to { opacity: 0; transform: translateX(100px); } }
+    @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
+    .glass-card, .auth-card { background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; position: relative; z-index: 1; overflow: hidden; }
+    .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent); }
+    .auth-brand { text-align: center; margin-bottom: 2rem; }
+    .auth-brand-icon { width: 56px; height: 56px; margin: 0 auto 1rem; }
+    .auth-brand-icon svg { width: 56px; height: 56px; filter: drop-shadow(0 0 12px rgba(0,212,255,0.4)); }
+    .auth-brand-title { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-cyan), #33ddff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.35rem; }
+    .auth-brand-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-input { width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-size: 0.9rem; transition: var(--transition); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-input:focus { border-color: rgba(0,212,255,0.4); box-shadow: 0 0 0 3px rgba(0,212,255,0.1), var(--glow-cyan); background: rgba(255,255,255,0.05); }
+    .input-group { position: relative; margin-bottom: 1.25rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: var(--radius); font-weight: 500; font-size: 0.875rem; transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+    .btn:active { transform: scale(0.97); }
+    .btn svg { width: 18px; height: 18px; }
+    .btn-primary { background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.1)); border: 1px solid rgba(0,212,255,0.3); color: var(--accent-cyan); }
+    .btn-primary:hover { background: linear-gradient(135deg, rgba(0,212,255,0.3), rgba(0,212,255,0.15)); box-shadow: var(--glow-cyan); border-color: rgba(0,212,255,0.5); }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+    .btn-outline:hover { border-color: var(--border-hover); color: var(--text-primary); background: rgba(255,255,255,0.03); }
+    .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10000; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; }
+    .toast { pointer-events: auto; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-radius: var(--radius); backdrop-filter: blur(20px); border: 1px solid var(--border-color); font-size: 0.875rem; min-width: 320px; max-width: 440px; animation: slideInRight 0.4s cubic-bezier(0.16,1,0.3,1) forwards; position: relative; overflow: hidden; }
+    .toast::after { content: ''; position: absolute; bottom: 0; left: 0; height: 2px; background: currentColor; animation: toastProgress 5s linear forwards; }
+    .toast-success { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2); color: var(--accent-green); }
+    .toast-error { background: rgba(255,51,102,0.08); border-color: rgba(255,51,102,0.2); color: var(--accent-red); }
+    .toast-info { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.2); color: var(--accent-cyan); }
+    .toast.removing { animation: slideOutRight 0.3s forwards; }
     .step-indicator {
       display: flex;
       align-items: center;

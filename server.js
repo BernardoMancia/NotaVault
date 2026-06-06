@@ -11,7 +11,15 @@ const app = express();
 
 securityMiddleware.forEach(mw => app.use(mw));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    } else if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    }
+  }
+}));
 
 app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/admin', require('./src/routes/admin.routes'));
