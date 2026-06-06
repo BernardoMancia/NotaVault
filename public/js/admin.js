@@ -19,10 +19,11 @@ function init() {
 
 async function loadStats() {
   try {
-    const data = await api('/api/admin/stats');
+    const response = await api('/api/admin/stats');
+    const data = response.data || response;
     document.getElementById('stat-total-users-count').textContent = data.totalUsers || 0;
     document.getElementById('stat-total-receipts-count').textContent = data.totalReceipts || 0;
-    document.getElementById('stat-total-value-amount').textContent = formatCurrency(data.totalValueMonth || 0);
+    document.getElementById('stat-total-value-amount').textContent = formatCurrency(data.totalValue || 0);
 
     const pendingCount = data.pendingApproval || 0;
     const pendingEl = document.getElementById('stat-pending-count');
@@ -43,7 +44,8 @@ async function loadStats() {
 
 async function loadUsers(status = 'all') {
   try {
-    const users = await api(`/api/admin/users?status=${status}`);
+    const response = await api(`/api/admin/users?status=${status}`);
+    const users = response.data || response;
     renderUsersTable(users);
   } catch (err) {
     showToast('Erro ao carregar usuários', 'error');
@@ -223,7 +225,8 @@ async function viewUserReceipts(id, username) {
   tbody.innerHTML = '';
 
   try {
-    const receipts = await api(`/api/admin/users/${id}/receipts`);
+    const response = await api(`/api/admin/users/${id}/receipts`);
+    const receipts = response.data || response;
     if (!receipts || receipts.length === 0) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
