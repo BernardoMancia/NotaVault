@@ -1,0 +1,32 @@
+{
+  "name": "notavault",
+  "version": "0.1.0",
+  "description": "Cofre Digital de Notas e Recibos - Receipt management with Gemini AI OCR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx nodemon server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.0",
+    "otpauth": "^9.3.0",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.33.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotaVault - Painel Administrativo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar glass-card">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">🔐</span>
+          <span class="logo-text">NotaVault</span>
+        </div>
+        <span class="role-badge badge-info">Admin</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="nav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#users" class="nav-item" data-section="users">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Usuários</span>
+        </a>
+        <a href="#stats" class="nav-item" data-section="stats">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Estatísticas</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span id="sidebar-username" class="username-text">Admin</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Sair</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <h1>Painel Administrativo</h1>
+        <p class="page-subtitle">Gerencie usuários e visualize estatísticas do sistema</p>
+      </header>
+
+      <section class="stats-row">
+        <div class="stat-card glass-card" id="stat-total-users">
+          <div class="stat-icon stat-icon-cyan">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Usuários</span>
+            <span class="stat-value" id="stat-total-users-count">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card glass-card" id="stat-pending">
+          <div class="stat-icon stat-icon-orange">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Pendentes Aprovação</span>
+            <span class="stat-value" id="stat-pending-count">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card glass-card" id="stat-total-receipts">
+          <div class="stat-icon stat-icon-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Notas</span>
+            <span class="stat-value" id="stat-total-receipts-count">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card glass-card" id="stat-total-value">
+          <div class="stat-icon stat-icon-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Gasto Total Mês</span>
+            <span class="stat-value text-mono" id="stat-total-value-amount">R$ 0,00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section glass-card" id="users-section">
+        <div class="section-header">
+          <h2>Gerenciamento de Usuários</h2>
+          <button class="btn btn-primary" id="btn-add-user">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Novo Usuário</span>
+          </button>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-status="all">Todos</button>
+          <button class="filter-tab" data-status="pending">Pendentes</button>
+          <button class="filter-tab" data-status="active">Ativos</button>
+          <button class="filter-tab" data-status="inactive">Inativos</button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Usuário</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>MFA</th>
+                <th>Data Criação</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="create-user-modal" hidden>
+    <div class="modal glass-card">
+      <h2>Novo Usuário</h2>
+      <form id="create-user-form">
+        <div class="form-group">
+          <label for="new-username">Usuário</label>
+          <input type="text" id="new-username" class="form-input" placeholder="Nome de usuário" required minlength="3" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label for="new-user-email">Email</label>
+          <input type="email" id="new-user-email" class="form-input" placeholder="email@exemplo.com" required>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Criar</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('create-user-modal')">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="receipts-modal" hidden>
+    <div class="modal modal-wide glass-card">
+      <div class="modal-header">
+        <h2 id="receipts-modal-title">Notas do Usuário</h2>
+        <button class="btn-close" onclick="closeModal('receipts-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Loja</th>
+              <th>Valor</th>
+              <th>Tipo</th>
+              <th>Data Compra</th>
+              <th>Capturado em</th>
+            </tr>
+          </thead>
+          <tbody id="user-receipts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirm-modal" hidden>
+    <div class="modal glass-card">
+      <h2>Confirmação</h2>
+      <p id="confirm-message"></p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="btn-confirm-yes">Confirmar</button>
+        <button class="btn btn-secondary" onclick="closeModal('confirm-modal')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="email-modal" hidden>
+    <div class="modal glass-card">
+      <h2>Alterar Email</h2>
+      <div class="form-group">
+        <label for="new-email-input">Novo Email</label>
+        <input type="email" id="new-email-input" class="form-input" placeholder="novo@email.com" required>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btn-save-email">Salvar</button>
+        <button class="btn btn-secondary" onclick="closeModal('email-modal')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

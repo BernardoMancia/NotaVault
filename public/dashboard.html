@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NotaVault Dashboard - Gerencie suas notas fiscais e recibos com segurança, OCR inteligente via Gemini AI e controle financeiro em tempo real.">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="robots" content="noindex, nofollow">
+  <title>NotaVault - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%2333ddff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M16 2L4 8v8c0 7.2 5.1 13.9 12 16 6.9-2.1 12-8.8 12-16V8L16 2z' fill='url(%23g)' opacity='0.9'/%3E%3Cpath d='M14 17l-3-3-1.5 1.5L14 20l7-7-1.5-1.5L14 17z' fill='%230a0a0f'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="app-layout">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sidebar-shield-grad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#33ddff"/>
+              </linearGradient>
+              <linearGradient id="sidebar-shield-inner" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#33ddff" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+            <path d="M28 4L8 14v12c0 12.6 8.5 24.3 20 28 11.5-3.7 20-15.4 20-28V14L28 4z" fill="url(#sidebar-shield-inner)" stroke="url(#sidebar-shield-grad)" stroke-width="1.5"/>
+            <path d="M28 12L14 18v8c0 8.4 5.6 16.2 14 18.6 8.4-2.4 14-10.2 14-18.6v-8L28 12z" fill="url(#sidebar-shield-inner)" stroke="url(#sidebar-shield-grad)" stroke-width="0.8" opacity="0.6"/>
+            <path d="M24 30l-6-6 2.5-2.5L24 25l11.5-11.5L38 16 24 30z" fill="url(#sidebar-shield-grad)"/>
+          </svg>
+        </div>
+        <span class="sidebar-brand-text">NotaVault</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="sidebar-nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="#" class="sidebar-nav-item" data-page="receipts" id="nav-receipts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Minhas Notas
+        </a>
+        <a href="/settings.html" class="sidebar-nav-item" data-page="settings" id="nav-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Configurações
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar"></div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-username"></div>
+          <div class="sidebar-user-mfa" id="mfa-badge" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            MFA Ativo
+          </div>
+        </div>
+        <button class="sidebar-logout" id="btn-logout" type="button" aria-label="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <header class="header">
+        <div>
+          <h1 class="header-title">Dashboard</h1>
+        </div>
+        <div class="header-greeting">
+          Olá, <span id="greeting"></span>
+        </div>
+      </header>
+
+      <div class="content-area" id="dashboard-section">
+
+        <section class="stat-cards">
+          <div class="stat-card" id="stat-today-count" style="--stat-accent: rgba(0, 212, 255, 0.2);">
+            <div class="stat-card-icon cyan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
+            <div class="stat-card-info">
+              <div class="stat-card-label">Notas Hoje</div>
+              <div class="stat-card-value cyan" id="today-count">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card" id="stat-today-value" style="--stat-accent: rgba(0, 255, 136, 0.2);">
+            <div class="stat-card-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div class="stat-card-info">
+              <div class="stat-card-label">Gasto Hoje</div>
+              <div class="stat-card-value green text-mono" id="today-value">R$ 0,00</div>
+            </div>
+          </div>
+
+          <div class="stat-card" id="stat-month-value" style="--stat-accent: rgba(168, 85, 247, 0.2);">
+            <div class="stat-card-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="stat-card-info">
+              <div class="stat-card-label">Gasto do Mês</div>
+              <div class="stat-card-value purple text-mono" id="month-value">R$ 0,00</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="action-bar" id="action-row">
+          <button type="button" class="btn btn-primary" id="btn-camera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            Capturar Nota
+          </button>
+          <button type="button" class="btn btn-outline" id="btn-upload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Enviar Foto
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-export">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exportar CSV
+          </button>
+          <input type="file" id="file-input" accept="image/*" capture="environment" hidden>
+        </section>
+
+        <div id="upload-zone" class="upload-zone">
+          <div class="upload-zone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="upload-zone-text">Arraste e solte a imagem aqui</div>
+          <div class="upload-zone-subtext">ou clique para selecionar — PNG, JPG, WebP até 10MB</div>
+          <div class="upload-progress" id="upload-progress-wrapper">
+            <div class="upload-progress-text">
+              <span id="upload-status">Enviando...</span>
+              <span id="upload-percent">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="upload-progress" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="camera-overlay" class="camera-overlay">
+          <video id="camera-video" autoplay playsinline></video>
+          <canvas id="camera-canvas" hidden></canvas>
+          <div class="camera-controls">
+            <button type="button" class="camera-close-btn" id="btn-close-camera" aria-label="Fechar câmera">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+            <button type="button" class="camera-capture-btn" id="btn-capture" aria-label="Capturar foto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6" fill="white"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <section class="filter-bar glass-card" id="filter-bar">
+          <div class="filter-bar-row">
+            <div class="input-group">
+              <label class="form-label" for="filter-date-from">De:</label>
+              <input type="date" id="filter-date-from" class="form-input">
+            </div>
+            <div class="input-group">
+              <label class="form-label" for="filter-date-to">Até:</label>
+              <input type="date" id="filter-date-to" class="form-input">
+            </div>
+            <div class="filter-presets" style="margin-top: 0; align-self: flex-end;">
+              <button type="button" class="btn btn-sm btn-outline date-preset" data-preset="today">Hoje</button>
+              <button type="button" class="btn btn-sm btn-outline date-preset" data-preset="7d">7 dias</button>
+              <button type="button" class="btn btn-sm btn-outline date-preset" data-preset="30d">30 dias</button>
+              <button type="button" class="btn btn-sm btn-outline date-preset" data-preset="month">Mês</button>
+            </div>
+          </div>
+          <div class="filter-bar-row" style="margin-top: 0.75rem;">
+            <div class="input-group">
+              <label class="form-label" for="filter-value-min">Valor min:</label>
+              <input type="number" id="filter-value-min" class="form-input" step="0.01" placeholder="0,00" min="0">
+            </div>
+            <div class="input-group">
+              <label class="form-label" for="filter-value-max">Valor max:</label>
+              <input type="number" id="filter-value-max" class="form-input" step="0.01" placeholder="0,00" min="0">
+            </div>
+            <div class="input-group" style="flex: 2;">
+              <label class="form-label" for="filter-store">Estabelecimento</label>
+              <input type="text" id="filter-store" class="form-input" placeholder="Buscar estabelecimento...">
+            </div>
+            <div class="input-group">
+              <label class="form-label" for="filter-type">Tipo</label>
+              <select id="filter-type" class="form-input">
+                <option value="">Todos</option>
+                <option value="nota_fiscal">Nota Fiscal</option>
+                <option value="recibo_cartao_credito">Cartão Crédito</option>
+                <option value="recibo_cartao_debito">Cartão Débito</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+          </div>
+          <div class="filter-bar-row" style="margin-top: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-apply-filters">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              Filtrar
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-clear-filters">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Limpar
+            </button>
+          </div>
+        </section>
+
+        <div id="filter-chips" class="filter-chips"></div>
+
+        <div class="results-info" id="results-info">
+          <span id="results-count">Mostrando 0 resultados</span>
+        </div>
+
+        <div class="data-table-wrapper" id="table-wrapper">
+          <table class="data-table" id="receipts-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="sortable" data-sort="purchase_date">Data <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="store_name">Estabelecimento <span class="sort-icon">↕</span></th>
+                <th>Tipo</th>
+                <th class="sortable text-right" data-sort="total_value">Valor R$ <span class="sort-icon">↕</span></th>
+                <th>Método</th>
+                <th class="text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="receipts-tbody"></tbody>
+          </table>
+        </div>
+
+        <div id="pagination" class="pagination"></div>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="15" x2="15" y2="15" opacity="0.3"/>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">Nenhuma nota encontrada</h3>
+          <p class="empty-state-text">Capture ou envie uma foto para começar</p>
+        </div>
+
+      </div>
+
+      <div class="content-area" id="settings-section" hidden>
+        <h2 class="header-title" style="margin-bottom: 1.5rem;">Configurações</h2>
+
+        <div class="glass-card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem;">Autenticação em Duas Etapas (MFA)</h3>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Status:</span>
+                <span class="badge badge-red" id="settings-mfa-status">Desativado</span>
+              </div>
+            </div>
+            <a href="/mfa-setup.html" class="btn btn-primary btn-sm" id="btn-setup-mfa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Configurar MFA
+            </a>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem;">Alterar Senha</h3>
+          <form id="change-password-form" autocomplete="off">
+            <div class="input-group">
+              <label class="form-label" for="settings-current-password">Senha Atual</label>
+              <div class="input-with-icon">
+                <input type="password" id="settings-current-password" class="form-input" placeholder="Digite sua senha atual" autocomplete="current-password" required>
+                <span class="input-icon toggle-password" role="button" tabindex="0" aria-label="Mostrar senha" data-target="settings-current-password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="form-label" for="settings-new-password">Nova Senha</label>
+              <div class="input-with-icon">
+                <input type="password" id="settings-new-password" class="form-input" placeholder="Digite a nova senha" autocomplete="new-password" required>
+                <span class="input-icon toggle-password" role="button" tabindex="0" aria-label="Mostrar senha" data-target="settings-new-password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="password-meter" id="settings-password-meter">
+                <div class="password-meter-segment"></div>
+                <div class="password-meter-segment"></div>
+                <div class="password-meter-segment"></div>
+                <div class="password-meter-segment"></div>
+                <div class="password-meter-segment"></div>
+              </div>
+              <div class="password-meter-label" id="settings-password-strength"></div>
+              <div class="password-requirements" id="settings-password-requirements">
+                <div class="password-requirement" data-req="length">
+                  <span class="password-requirement-icon">○</span>
+                  <span>Mínimo de 8 caracteres</span>
+                </div>
+                <div class="password-requirement" data-req="uppercase">
+                  <span class="password-requirement-icon">○</span>
+                  <span>Uma letra maiúscula</span>
+                </div>
+                <div class="password-requirement" data-req="lowercase">
+                  <span class="password-requirement-icon">○</span>
+                  <span>Uma letra minúscula</span>
+                </div>
+                <div class="password-requirement" data-req="number">
+                  <span class="password-requirement-icon">○</span>
+                  <span>Um número</span>
+                </div>
+                <div class="password-requirement" data-req="special">
+                  <span class="password-requirement-icon">○</span>
+                  <span>Um caractere especial (!@#$%^&*)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="form-label" for="settings-confirm-password">Confirmar Nova Senha</label>
+              <div class="input-with-icon">
+                <input type="password" id="settings-confirm-password" class="form-input" placeholder="Confirme a nova senha" autocomplete="new-password" required>
+                <span class="input-icon toggle-password" role="button" tabindex="0" aria-label="Mostrar senha" data-target="settings-confirm-password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="btn-change-password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Alterar Senha
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal glass-card modal-lg">
+      <div class="modal-header">
+        <h3>Detalhes da Nota</h3>
+        <button type="button" class="modal-close" id="btn-close-detail" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+          <div style="flex: 0 0 280px;">
+            <img id="detail-image" src="" alt="Imagem da nota" style="width: 100%; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-card);">
+          </div>
+          <div style="flex: 1; min-width: 240px;">
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.875rem; margin-bottom: 1.25rem;">
+              <span style="color: var(--text-muted);">Estabelecimento:</span>
+              <span id="detail-store" style="font-weight: 500;"></span>
+              <span style="color: var(--text-muted);">Data:</span>
+              <span id="detail-date" class="text-mono"></span>
+              <span style="color: var(--text-muted);">Horário:</span>
+              <span id="detail-time" class="text-mono"></span>
+              <span style="color: var(--text-muted);">Tipo:</span>
+              <span id="detail-type"></span>
+              <span style="color: var(--text-muted);">Método de Pagamento:</span>
+              <span id="detail-payment"></span>
+              <span style="color: var(--text-muted);">Valor Total:</span>
+              <span id="detail-value" class="text-mono" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-green);"></span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Texto Transcrito</h4>
+          <pre id="detail-text" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow-y: auto;"></pre>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Dados Estruturados</h4>
+          <div id="detail-structured" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); max-height: 200px; overflow-y: auto;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" id="btn-delete-receipt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            <line x1="10" y1="11" x2="10" y2="17"/>
+            <line x1="14" y1="11" x2="14" y2="17"/>
+          </svg>
+          Excluir Nota
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-close-detail-footer">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

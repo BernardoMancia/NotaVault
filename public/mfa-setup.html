@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NotaVault - Configure a autenticação em dois fatores para proteger sua conta.">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>NotaVault - Configurar MFA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%2333ddff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M16 2L4 8v8c0 7.2 5.1 13.9 12 16 6.9-2.1 12-8.8 12-16V8L16 2z' fill='url(%23g)' opacity='0.9'/%3E%3Cpath d='M14 17l-3-3-1.5 1.5L14 20l7-7-1.5-1.5L14 17z' fill='%230a0a0f'/%3E%3C/svg%3E">
+  <style>
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+    }
+
+    .step-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .step-dot.active {
+      background: rgba(0, 212, 255, 0.15);
+      border-color: #00d4ff;
+      color: #00d4ff;
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+    }
+
+    .step-line {
+      width: 60px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: background 0.3s ease;
+    }
+
+    .step-line.active {
+      background: linear-gradient(90deg, #00d4ff, rgba(0, 212, 255, 0.3));
+    }
+
+    .mfa-hero-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .mfa-hero-icon svg {
+      width: 80px;
+      height: 80px;
+    }
+
+    .mfa-step h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .mfa-step p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .mfa-step ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .mfa-step ul li {
+      padding: 0.5rem 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mfa-step ul li::before {
+      content: '•';
+      color: #00d4ff;
+      font-weight: bold;
+    }
+
+    .mfa-step ul li a {
+      color: #00d4ff;
+      text-decoration: none;
+    }
+
+    .mfa-step ul li a:hover {
+      text-decoration: underline;
+    }
+
+    #qr-container {
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem;
+      background: #ffffff;
+      border-radius: 12px;
+      margin: 1rem auto;
+      max-width: 240px;
+    }
+
+    #qr-container img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.25rem 0;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .manual-secret {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin: 0.75rem 0 1.5rem;
+    }
+
+    .manual-secret code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: #00d4ff;
+      flex: 1;
+      word-break: break-all;
+      letter-spacing: 0.05em;
+    }
+
+    .manual-secret .btn {
+      flex-shrink: 0;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn-row .btn {
+      flex: 1;
+    }
+
+    .mfa-code-input {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .mfa-digit {
+      width: 48px;
+      height: 56px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #e2e8f0;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .mfa-digit:focus {
+      border-color: #00d4ff;
+      box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+    }
+
+    #mfa-verify-error {
+      background: rgba(255, 51, 102, 0.1);
+      border: 1px solid rgba(255, 51, 102, 0.3);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #ff3366;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .mfa-success-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .mfa-success-icon svg {
+      width: 72px;
+      height: 72px;
+    }
+
+    .text-green {
+      color: #00ff88 !important;
+    }
+
+    .alert-warning {
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      color: #ff6b35;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+    }
+
+    #backup-codes-grid,
+    #regen-codes-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    #backup-codes-grid span,
+    #regen-codes-display span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      text-align: center;
+      letter-spacing: 0.08em;
+    }
+
+    .badge-green {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      color: #00ff88;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-danger {
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid rgba(255, 51, 102, 0.4);
+      color: #ff3366;
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 51, 102, 0.25);
+      box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
+    }
+
+    .disable-form {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .disable-form .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .disable-mfa-digits {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .disable-mfa-digits input {
+      width: 44px;
+      height: 50px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #e2e8f0;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .disable-mfa-digits input:focus {
+      border-color: #ff3366;
+      box-shadow: 0 0 0 2px rgba(255, 51, 102, 0.2);
+    }
+
+    .regen-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .auth-card {
+      max-width: 520px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-layout">
+    <div class="auth-card glass-card">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="shield-grad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#33ddff"/>
+              </linearGradient>
+              <linearGradient id="shield-inner" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#33ddff" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+            <path d="M28 4L8 14v12c0 12.6 8.5 24.3 20 28 11.5-3.7 20-15.4 20-28V14L28 4z" fill="url(#shield-inner)" stroke="url(#shield-grad)" stroke-width="1.5"/>
+            <path d="M28 12L14 18v8c0 8.4 5.6 16.2 14 18.6 8.4-2.4 14-10.2 14-18.6v-8L28 12z" fill="url(#shield-inner)" stroke="url(#shield-grad)" stroke-width="0.8" opacity="0.6"/>
+            <path d="M24 30l-6-6 2.5-2.5L24 25l11.5-11.5L38 16 24 30z" fill="url(#shield-grad)"/>
+          </svg>
+        </div>
+        <h1 class="auth-brand-title">NotaVault</h1>
+        <p class="auth-brand-subtitle">Autenticação em Dois Fatores</p>
+      </div>
+
+      <div class="step-indicator" id="step-indicator">
+        <div class="step-dot active" data-step="1">1</div>
+        <div class="step-line" data-line="1"></div>
+        <div class="step-dot" data-step="2">2</div>
+        <div class="step-line" data-line="2"></div>
+        <div class="step-dot" data-step="3">3</div>
+      </div>
+
+      <div id="mfa-step-1" class="mfa-step">
+        <div class="mfa-hero-icon">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="hero-grad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#33ddff"/>
+              </linearGradient>
+              <linearGradient id="hero-inner" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#33ddff" stop-opacity="0.05"/>
+              </linearGradient>
+            </defs>
+            <path d="M40 6L12 20v16c0 18 12.2 34.7 28 40 15.8-5.3 28-22 28-40V20L40 6z" fill="url(#hero-inner)" stroke="url(#hero-grad)" stroke-width="2"/>
+            <path d="M40 18L22 28v10c0 12 8 23 18 26.5 10-3.5 18-14.5 18-26.5V28L40 18z" fill="url(#hero-inner)" stroke="url(#hero-grad)" stroke-width="1" opacity="0.5"/>
+            <rect x="34" y="32" width="12" height="16" rx="2" stroke="url(#hero-grad)" stroke-width="2" fill="none"/>
+            <circle cx="40" cy="40" r="2.5" fill="url(#hero-grad)"/>
+            <line x1="40" y1="42.5" x2="40" y2="45" stroke="url(#hero-grad)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M34 32v-4a6 6 0 0 1 12 0v4" stroke="url(#hero-grad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <h3>Proteja sua conta</h3>
+        <p>A autenticação em dois fatores adiciona uma camada extra de segurança à sua conta.</p>
+        <p>Você precisará de um aplicativo autenticador no seu celular:</p>
+        <ul>
+          <li><a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" rel="noopener">Google Authenticator</a></li>
+          <li><a href="https://authy.com/download/" target="_blank" rel="noopener">Authy</a></li>
+          <li>Microsoft Authenticator</li>
+        </ul>
+        <button type="button" id="btn-step1-next" class="btn btn-primary" style="width:100%">Próximo</button>
+      </div>
+
+      <div id="mfa-step-2" class="mfa-step hidden">
+        <h3>Escaneie o QR Code</h3>
+        <div id="qr-container"></div>
+        <p style="text-align:center">Abra o aplicativo autenticador e escaneie o código acima.</p>
+        <div class="divider">ou</div>
+        <p>Insira o código manualmente:</p>
+        <div class="manual-secret">
+          <code id="mfa-secret-text"></code>
+          <button type="button" id="btn-copy-secret" class="btn btn-outline">Copiar</button>
+        </div>
+        <div class="btn-row">
+          <button type="button" id="btn-step2-back" class="btn btn-outline">Voltar</button>
+          <button type="button" id="btn-step2-next" class="btn btn-primary">Próximo</button>
+        </div>
+      </div>
+
+      <div id="mfa-step-3" class="mfa-step hidden">
+        <h3>Verificação</h3>
+        <p style="text-align:center">Digite o código de 6 dígitos exibido no seu aplicativo autenticador:</p>
+        <div class="mfa-code-input" id="mfa-code-inputs">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="0">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="1">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="2">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="3">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="4">
+          <input type="text" maxlength="1" class="mfa-digit" inputmode="numeric" pattern="[0-9]" data-index="5">
+        </div>
+        <div id="mfa-verify-error" class="hidden"></div>
+        <button type="button" id="btn-activate-mfa" class="btn btn-primary" style="width:100%">Ativar MFA</button>
+      </div>
+
+      <div id="mfa-success" class="mfa-step hidden">
+        <div class="mfa-success-icon">
+          <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="34" stroke="#00ff88" stroke-width="2" fill="rgba(0,255,136,0.08)"/>
+            <circle cx="36" cy="36" r="26" stroke="#00ff88" stroke-width="1" fill="rgba(0,255,136,0.04)" opacity="0.6"/>
+            <polyline points="22,36 32,46 50,28" stroke="#00ff88" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <h3 class="text-green">MFA Ativado com Sucesso!</h3>
+        <div class="alert-warning">Guarde estes códigos de backup em um local seguro. Cada código só pode ser usado uma vez.</div>
+        <div id="backup-codes-grid"></div>
+        <div class="btn-row">
+          <button type="button" id="btn-copy-codes" class="btn btn-outline">Copiar Códigos</button>
+          <button type="button" id="btn-download-codes" class="btn btn-outline">Baixar Códigos</button>
+        </div>
+        <a href="dashboard.html" class="btn btn-primary" style="width:100%;margin-top:1rem;text-align:center;display:block">Voltar ao Dashboard</a>
+      </div>
+
+      <div id="mfa-disable-section" class="mfa-step hidden">
+        <div style="text-align:center">
+          <div class="badge-green">MFA está ativo ✓</div>
+        </div>
+        <button type="button" id="btn-show-disable" class="btn btn-danger" style="width:100%">Desativar MFA</button>
+
+        <div id="disable-form" class="disable-form hidden">
+          <div class="input-group">
+            <label class="form-label" for="disable-password">Senha atual</label>
+            <input type="password" id="disable-password" class="form-input" placeholder="Digite sua senha" required>
+          </div>
+          <p style="color:#94a3b8;font-size:0.85rem;text-align:center;margin-bottom:0.5rem">Código TOTP de 6 dígitos:</p>
+          <div class="disable-mfa-digits" id="disable-mfa-digits">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="0">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4">
+            <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5">
+          </div>
+          <button type="button" id="btn-confirm-disable" class="btn btn-danger" style="width:100%">Confirmar Desativação</button>
+        </div>
+
+        <div class="regen-section">
+          <button type="button" id="btn-regen-codes" class="btn btn-outline" style="width:100%">Regenerar Códigos de Backup</button>
+          <div id="regen-codes-display" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/mfa.js"></script>
+</body>
+</html>
