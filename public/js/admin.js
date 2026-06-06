@@ -1,11 +1,30 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   redirectIfNotAuthenticated();
-  const user = getUser();
+  var user = getUser();
   if (!user || user.role !== 'admin') {
     window.location.href = '/login';
     return;
   }
-  document.getElementById('sidebar-username').textContent = user.username;
+
+  var usernameEl = document.getElementById('sidebar-username');
+  if (usernameEl) usernameEl.textContent = user.username;
+
+  var toggle = document.getElementById('sidebar-toggle');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      if (overlay) overlay.classList.toggle('active');
+    });
+  }
+  if (overlay) {
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+  }
+
   init();
 });
 
@@ -19,33 +38,22 @@ function init() {
 
 async function loadStats() {
   try {
-    const response = await api('/api/admin/stats');
-    const data = response.data || response;
+    var response = await api('/api/admin/stats');
+    var data = response.data || response;
     document.getElementById('stat-total-users-count').textContent = data.totalUsers || 0;
+    document.getElementById('stat-pending-count').textContent = data.pendingApproval || 0;
     document.getElementById('stat-total-receipts-count').textContent = data.totalReceipts || 0;
     document.getElementById('stat-total-value-amount').textContent = formatCurrency(data.totalValue || 0);
-
-    const pendingCount = data.pendingApproval || 0;
-    const pendingEl = document.getElementById('stat-pending-count');
-    pendingEl.textContent = pendingCount;
-
-    const pendingCard = document.getElementById('stat-pending');
-    if (pendingCount > 0) {
-      pendingCard.classList.add('badge-orange');
-      pendingEl.classList.add('badge-orange');
-    } else {
-      pendingCard.classList.remove('badge-orange');
-      pendingEl.classList.remove('badge-orange');
-    }
   } catch (err) {
     showToast('Erro ao carregar estatísticas', 'error');
   }
 }
 
-async function loadUsers(status = 'all') {
+async function loadUsers(status) {
+  status = status || 'all';
   try {
-    const response = await api(`/api/admin/users?status=${status}`);
-    const users = response.data || response;
+    var response = await api('/api/admin/users?status=' + status);
+    var users = response.data || response;
     renderUsersTable(users);
   } catch (err) {
     showToast('Erro ao carregar usuários', 'error');
@@ -53,246 +61,216 @@ async function loadUsers(status = 'all') {
 }
 
 function renderUsersTable(users) {
-  const tbody = document.getElementById('users-tbody');
+  var tbody = document.getElementById('users-tbody');
   tbody.innerHTML = '';
 
   if (!users || users.length === 0) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
+    var tr = document.createElement('tr');
+    var td = document.createElement('td');
     td.colSpan = 7;
-    td.className = 'text-center text-secondary';
+    td.className = 'text-center text-muted';
+    td.style.padding = '3rem';
     td.textContent = 'Nenhum usuário encontrado';
     tr.appendChild(td);
     tbody.appendChild(tr);
     return;
   }
 
-  users.forEach(u => {
-    const tr = document.createElement('tr');
+  users.forEach(function(u) {
+    var tr = document.createElement('tr');
 
-    const tdId = document.createElement('td');
+    var tdId = document.createElement('td');
     tdId.textContent = u.id;
     tr.appendChild(tdId);
 
-    const tdUsername = document.createElement('td');
-    tdUsername.textContent = u.username;
-    tr.appendChild(tdUsername);
+    var tdUser = document.createElement('td');
+    tdUser.style.fontWeight = '500';
+    tdUser.textContent = u.username;
+    tr.appendChild(tdUser);
 
-    const tdEmail = document.createElement('td');
+    var tdEmail = document.createElement('td');
     tdEmail.textContent = u.email;
     tr.appendChild(tdEmail);
 
-    const tdStatus = document.createElement('td');
-    const statusBadge = document.createElement('span');
+    var tdStatus = document.createElement('td');
+    var badge = document.createElement('span');
     if (!u.is_approved) {
-      statusBadge.className = 'badge badge-orange';
-      statusBadge.textContent = 'Pendente';
+      badge.className = 'badge badge-orange';
+      badge.textContent = 'Pendente';
     } else if (u.is_active) {
-      statusBadge.className = 'badge badge-green';
-      statusBadge.textContent = 'Ativo';
+      badge.className = 'badge badge-green';
+      badge.textContent = 'Ativo';
     } else {
-      statusBadge.className = 'badge badge-red';
-      statusBadge.textContent = 'Inativo';
+      badge.className = 'badge badge-red';
+      badge.textContent = 'Inativo';
     }
-    tdStatus.appendChild(statusBadge);
+    tdStatus.appendChild(badge);
     tr.appendChild(tdStatus);
 
-    const tdMfa = document.createElement('td');
+    var tdMfa = document.createElement('td');
     tdMfa.textContent = u.mfa_enabled ? '🔒' : '—';
     tr.appendChild(tdMfa);
 
-    const tdCreated = document.createElement('td');
-    tdCreated.textContent = formatDate(u.created_at);
-    tr.appendChild(tdCreated);
+    var tdDate = document.createElement('td');
+    tdDate.textContent = formatDate(u.created_at);
+    tr.appendChild(tdDate);
 
-    const tdActions = document.createElement('td');
-    tdActions.className = 'actions-cell';
+    var tdActions = document.createElement('td');
+    var actionsWrap = document.createElement('div');
+    actionsWrap.className = 'actions-wrap';
 
     if (!u.is_approved && u.is_active) {
-      const btnApprove = createActionButton('Aprovar', 'btn-primary btn-sm', () => approveUser(u.id));
-      tdActions.appendChild(btnApprove);
-
-      const btnReceipts = createActionButton('Ver Notas', 'btn-secondary btn-sm', () => viewUserReceipts(u.id, u.username));
-      tdActions.appendChild(btnReceipts);
-
-      const btnReset = createActionButton('Resetar Senha', 'btn-secondary btn-sm', () => resetPassword(u.id));
-      tdActions.appendChild(btnReset);
-
-      const btnDeactivate = createActionButton('Desativar', 'btn-danger btn-sm', () => deactivateUser(u.id));
-      tdActions.appendChild(btnDeactivate);
-    } else if (u.is_active && u.is_approved) {
-      const btnReceipts = createActionButton('Ver Notas', 'btn-secondary btn-sm', () => viewUserReceipts(u.id, u.username));
-      tdActions.appendChild(btnReceipts);
-
-      const btnReset = createActionButton('Resetar Senha', 'btn-secondary btn-sm', () => resetPassword(u.id));
-      tdActions.appendChild(btnReset);
-
-      const btnEmail = createActionButton('Alterar Email', 'btn-secondary btn-sm', () => changeEmail(u.id));
-      tdActions.appendChild(btnEmail);
-
-      const btnDeactivate = createActionButton('Desativar', 'btn-danger btn-sm', () => deactivateUser(u.id));
-      tdActions.appendChild(btnDeactivate);
+      actionsWrap.appendChild(makeBtn('Aprovar', 'btn-success btn-sm', function() { approveUser(u.id); }));
+    }
+    if (u.is_active) {
+      actionsWrap.appendChild(makeBtn('Ver Notas', 'btn-secondary btn-sm', function() { viewUserReceipts(u.id, u.username); }));
+      actionsWrap.appendChild(makeBtn('Resetar Senha', 'btn-secondary btn-sm', function() { resetPassword(u.id); }));
+      if (u.is_approved) {
+        actionsWrap.appendChild(makeBtn('Alterar Email', 'btn-secondary btn-sm', function() { changeEmail(u.id); }));
+      }
+      actionsWrap.appendChild(makeBtn('Desativar', 'btn-danger btn-sm', function() { deactivateUser(u.id); }));
     } else {
-      const inactiveText = document.createElement('span');
-      inactiveText.className = 'text-secondary';
-      inactiveText.textContent = 'Inativo';
-      tdActions.appendChild(inactiveText);
+      var span = document.createElement('span');
+      span.className = 'text-muted';
+      span.textContent = 'Inativo';
+      actionsWrap.appendChild(span);
     }
 
+    tdActions.appendChild(actionsWrap);
     tr.appendChild(tdActions);
     tbody.appendChild(tr);
   });
 }
 
-function createActionButton(text, className, onClick) {
-  const btn = document.createElement('button');
-  btn.className = `btn ${className}`;
+function makeBtn(text, cls, fn) {
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn ' + cls;
   btn.textContent = text;
-  btn.addEventListener('click', onClick);
+  btn.addEventListener('click', fn);
   return btn;
 }
 
 function approveUser(id) {
-  showConfirm('Aprovar este usuário?', async () => {
+  showConfirm('Aprovar este usuário?', async function() {
     try {
-      await api(`/api/admin/users/${id}/approve`, { method: 'PATCH' });
+      await api('/api/admin/users/' + id + '/approve', { method: 'PATCH' });
       showToast('Usuário aprovado com sucesso', 'success');
       loadUsers(getCurrentFilter());
       loadStats();
     } catch (err) {
-      showToast('Erro ao aprovar usuário', 'error');
+      showToast(err.message || 'Erro ao aprovar usuário', 'error');
     }
   });
 }
 
 function resetPassword(id) {
-  showConfirm('Resetar senha deste usuário?', async () => {
+  showConfirm('Resetar senha deste usuário?', async function() {
     try {
-      await api(`/api/admin/users/${id}/reset-password`, { method: 'PATCH' });
-      showToast('Nova senha enviada por email', 'success');
+      var response = await api('/api/admin/users/' + id + '/reset-password', { method: 'PATCH' });
+      var msg = 'Senha resetada com sucesso';
+      if (response.temp_password) msg += '. Senha temporária: ' + response.temp_password;
+      showToast(msg, 'success');
       loadUsers(getCurrentFilter());
     } catch (err) {
-      showToast('Erro ao resetar senha', 'error');
+      showToast(err.message || 'Erro ao resetar senha', 'error');
     }
   });
 }
 
 function changeEmail(id) {
-  const emailInput = document.getElementById('new-email-input');
-  emailInput.value = '';
+  var input = document.getElementById('new-email-input');
+  input.value = '';
   openModal('email-modal');
 
-  const btnSave = document.getElementById('btn-save-email');
-  const newBtnSave = btnSave.cloneNode(true);
-  btnSave.parentNode.replaceChild(newBtnSave, btnSave);
+  var btn = document.getElementById('btn-save-email');
+  var newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
 
-  newBtnSave.addEventListener('click', async () => {
-    const newEmail = document.getElementById('new-email-input').value.trim();
-    if (!newEmail) {
+  newBtn.addEventListener('click', async function() {
+    var email = document.getElementById('new-email-input').value.trim();
+    if (!email) {
       showToast('Informe o novo email', 'error');
       return;
     }
     try {
-      await api(`/api/admin/users/${id}/email`, {
-        method: 'PATCH',
-        body: { email: newEmail }
-      });
+      await api('/api/admin/users/' + id + '/email', { method: 'PATCH', body: { email: email } });
       showToast('Email alterado com sucesso', 'success');
       closeModal('email-modal');
       loadUsers(getCurrentFilter());
     } catch (err) {
-      showToast('Erro ao alterar email', 'error');
+      showToast(err.message || 'Erro ao alterar email', 'error');
     }
   });
 }
 
 function deactivateUser(id) {
-  showConfirm('Desativar este usuário?', async () => {
+  showConfirm('Desativar este usuário? (Soft Delete)', async function() {
     try {
-      await api(`/api/admin/users/${id}`, { method: 'DELETE' });
+      await api('/api/admin/users/' + id, { method: 'DELETE' });
       showToast('Usuário desativado com sucesso', 'success');
       loadUsers(getCurrentFilter());
       loadStats();
     } catch (err) {
-      showToast('Erro ao desativar usuário', 'error');
+      showToast(err.message || 'Erro ao desativar usuário', 'error');
     }
   });
 }
 
 async function viewUserReceipts(id, username) {
-  document.getElementById('receipts-modal-title').textContent = `Notas de ${username}`;
-  const tbody = document.getElementById('user-receipts-tbody');
-  tbody.innerHTML = '';
+  document.getElementById('receipts-modal-title').textContent = 'Notas de ' + username;
+  var tbody = document.getElementById('user-receipts-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted" style="padding:2rem">Carregando...</td></tr>';
+  openModal('receipts-modal');
 
   try {
-    const response = await api(`/api/admin/users/${id}/receipts`);
-    const receipts = response.data || response;
+    var response = await api('/api/admin/users/' + id + '/receipts');
+    var receipts = response.data || response;
+    tbody.innerHTML = '';
+
     if (!receipts || receipts.length === 0) {
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
+      var tr = document.createElement('tr');
+      var td = document.createElement('td');
       td.colSpan = 6;
-      td.className = 'text-center text-secondary';
+      td.className = 'text-center text-muted';
+      td.style.padding = '2rem';
       td.textContent = 'Nenhuma nota encontrada';
       tr.appendChild(td);
       tbody.appendChild(tr);
-    } else {
-      receipts.forEach(r => {
-        const tr = document.createElement('tr');
-
-        const tdId = document.createElement('td');
-        tdId.textContent = r.id;
-        tr.appendChild(tdId);
-
-        const tdStore = document.createElement('td');
-        tdStore.textContent = r.store_name || '—';
-        tr.appendChild(tdStore);
-
-        const tdValue = document.createElement('td');
-        tdValue.className = 'text-mono';
-        tdValue.textContent = formatCurrency(r.total_value || 0);
-        tr.appendChild(tdValue);
-
-        const tdType = document.createElement('td');
-        tdType.textContent = formatReceiptType(r.type);
-        tr.appendChild(tdType);
-
-        const tdDate = document.createElement('td');
-        tdDate.textContent = r.purchase_date || '—';
-        tr.appendChild(tdDate);
-
-        const tdCaptured = document.createElement('td');
-        tdCaptured.textContent = formatDate(r.captured_at);
-        tr.appendChild(tdCaptured);
-
-        tbody.appendChild(tr);
-      });
+      return;
     }
-    openModal('receipts-modal');
+
+    receipts.forEach(function(r) {
+      var tr = document.createElement('tr');
+      [r.id, r.store_name || '—', formatCurrency(r.total_value || 0), formatReceiptType(r.type), r.purchase_date || '—', formatDate(r.captured_at)].forEach(function(val) {
+        var td = document.createElement('td');
+        td.textContent = val;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
   } catch (err) {
+    tbody.innerHTML = '';
     showToast('Erro ao carregar notas', 'error');
+    closeModal('receipts-modal');
   }
 }
 
 function formatReceiptType(type) {
-  const types = {
-    nota_fiscal: 'Nota Fiscal',
-    recibo_cartao_credito: 'Cartão Crédito',
-    recibo_cartao_debito: 'Cartão Débito',
-    outro: 'Outro'
-  };
+  var types = { nota_fiscal: 'Nota Fiscal', recibo_cartao_credito: 'Cartão Crédito', recibo_cartao_debito: 'Cartão Débito', outro: 'Outro' };
   return types[type] || type || '—';
 }
 
 function setupCreateUserForm() {
-  document.getElementById('btn-add-user').addEventListener('click', () => {
+  document.getElementById('btn-add-user').addEventListener('click', function() {
     document.getElementById('create-user-form').reset();
     openModal('create-user-modal');
   });
 
-  document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+  document.getElementById('create-user-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const username = document.getElementById('new-username').value.trim();
-    const email = document.getElementById('new-user-email').value.trim();
+    var username = document.getElementById('new-username').value.trim();
+    var email = document.getElementById('new-user-email').value.trim();
 
     if (!username || !email) {
       showToast('Preencha todos os campos', 'error');
@@ -300,34 +278,33 @@ function setupCreateUserForm() {
     }
 
     try {
-      await api('/api/admin/users', {
-        method: 'POST',
-        body: { username, email }
-      });
-      showToast('Usuário criado. Senha temporária enviada por email.', 'success');
+      var response = await api('/api/admin/users', { method: 'POST', body: { username: username, email: email } });
+      var msg = 'Usuário criado com sucesso';
+      if (response.data && response.data.temp_password) msg += '. Senha temporária: ' + response.data.temp_password;
+      showToast(msg, 'success');
       closeModal('create-user-modal');
       loadUsers(getCurrentFilter());
       loadStats();
     } catch (err) {
-      showToast('Erro ao criar usuário', 'error');
+      showToast(err.message || 'Erro ao criar usuário', 'error');
     }
   });
 }
 
 function setupFilterTabs() {
-  const tabs = document.querySelectorAll('.filter-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+  var tabs = document.querySelectorAll('.filter-tab');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
       tab.classList.add('active');
-      loadUsers(tab.dataset.status);
+      loadUsers(tab.getAttribute('data-status'));
     });
   });
 }
 
 function getCurrentFilter() {
-  const activeTab = document.querySelector('.filter-tab.active');
-  return activeTab ? activeTab.dataset.status : 'all';
+  var active = document.querySelector('.filter-tab.active');
+  return active ? active.getAttribute('data-status') : 'all';
 }
 
 function openModal(id) {
@@ -342,19 +319,19 @@ function showConfirm(message, callback) {
   document.getElementById('confirm-message').textContent = message;
   openModal('confirm-modal');
 
-  const btnYes = document.getElementById('btn-confirm-yes');
-  const newBtnYes = btnYes.cloneNode(true);
-  btnYes.parentNode.replaceChild(newBtnYes, btnYes);
+  var btn = document.getElementById('btn-confirm-yes');
+  var newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
 
-  newBtnYes.addEventListener('click', async () => {
+  newBtn.addEventListener('click', async function() {
     await callback();
     closeModal('confirm-modal');
   });
 }
 
 function setupModalOverlays() {
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
       if (e.target === overlay) {
         closeModal(overlay.id);
       }

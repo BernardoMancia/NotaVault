@@ -108,11 +108,7 @@
 
         var user = getUser();
         setTimeout(function() {
-          if (user && user.role === 'admin') {
-            window.location.href = '/admin';
-          } else {
-            window.location.href = '/dashboard';
-          }
+          window.location.href = '/dashboard';
         }, 500);
       }).catch(function(err) {
         if (err && err.mfa_required) {
@@ -151,11 +147,7 @@
 
           var user = getUser();
           setTimeout(function() {
-            if (user && user.role === 'admin') {
-              window.location.href = '/admin';
-            } else {
-              window.location.href = '/dashboard';
-            }
+            window.location.href = '/dashboard';
           }, 500);
         }).catch(function(err) {
           showToast(err.message || 'Código inválido', 'error');
@@ -210,11 +202,7 @@
 
           var user = getUser();
           setTimeout(function() {
-            if (user && user.role === 'admin') {
-              window.location.href = '/admin';
-            } else {
-              window.location.href = '/dashboard';
-            }
+            window.location.href = '/dashboard';
           }, 500);
         }).catch(function(err) {
           showToast(err.message || 'Código de backup inválido', 'error');
@@ -327,11 +315,7 @@
         showToast('Senha alterada com sucesso!', 'success');
         setTimeout(function() {
           var user = getUser();
-          if (user && user.role === 'admin') {
-            window.location.href = '/admin';
-          } else {
-            window.location.href = '/dashboard';
-          }
+          window.location.href = '/dashboard';
         }, 1000);
       }).catch(function(err) {
         showToast(err.message || 'Erro ao alterar senha', 'error');

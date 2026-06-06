@@ -54,6 +54,11 @@ async function init() {
   var sidebarAvatar = document.querySelector('.sidebar-avatar');
   if (sidebarAvatar) sidebarAvatar.textContent = user.username.charAt(0).toUpperCase();
 
+  if (user.role === 'admin') {
+    var adminNav = document.getElementById('nav-admin');
+    if (adminNav) adminNav.style.display = '';
+  }
+
   setupEventListeners();
   await loadStats();
   await loadReceipts();
@@ -186,9 +191,9 @@ function setupEventListeners() {
 
   document.querySelectorAll('.sidebar-nav-item').forEach(function(item) {
     item.addEventListener('click', function(e) {
-      e.preventDefault();
       var section = item.dataset.section;
       if (!section) return;
+      e.preventDefault();
 
       document.querySelectorAll('.sidebar-nav-item').forEach(function(nav) {
         nav.classList.remove('active');

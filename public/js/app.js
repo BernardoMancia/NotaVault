@@ -154,12 +154,7 @@ function redirectIfNotAuthenticated() {
 
 function redirectIfAuthenticated() {
   if (isAuthenticated()) {
-    var user = getUser();
-    if (user && user.role === 'admin') {
-      window.location.href = '/admin';
-    } else {
-      window.location.href = '/dashboard';
-    }
+    window.location.href = '/dashboard';
     return true;
   }
   return false;
