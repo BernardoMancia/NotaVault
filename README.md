@@ -75,7 +75,7 @@ Copie `.env.example` para `.env` e preencha:
 
 | Field | Value |
 |---|---|
-| Username | `Luke_Arwolf` |
+| Username | `Admin` |
 | Password | `1234` (must be changed on first login / deve ser alterada no primeiro login) |
 
 ## Usage / Uso
