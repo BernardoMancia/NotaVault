@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const { db } = require('../config/database');
 const { authenticateToken, requireRole, checkMfaVerified } = require('../middleware/auth');
 const { generateTempPassword } = require('../utils/password');
-const { sendApprovalEmail, sendPasswordResetEmail } = require('../services/email.service');
+const { sendApprovalEmail, sendPasswordResetEmail, sendRegistrationEmail } = require('../services/email.service');
 
 const router = express.Router();
 
@@ -324,6 +324,67 @@ router.delete('/users/:id', (req, res) => {
     res.json({ message: 'Usuário desativado com sucesso' });
   } catch (err) {
     console.error('Erro ao desativar usuário:', err.message);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.post('/users/:id/resend-email', async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    let tempPassword = user.temp_password;
+    if (!tempPassword) {
+      tempPassword = generateTempPassword();
+      const passwordHash = await bcrypt.hash(tempPassword, 12);
+      db.prepare(
+        'UPDATE users SET password_hash = ?, force_password_change = 1, temp_password = ?, updated_at = datetime(\'now\') WHERE id = ?'
+      ).run(passwordHash, tempPassword, userId);
+    }
+
+    if (user.is_approved) {
+      await sendApprovalEmail({ id: userId, username: user.username, email: user.email }, tempPassword);
+    } else {
+      await sendRegistrationEmail({ id: userId, username: user.username, email: user.email }, tempPassword);
+    }
+
+    logAudit(req.user.id, 'ADMIN_RESEND_EMAIL', { targetUserId: userId, targetUser: user.username }, req);
+
+    res.json({ message: 'E-mail reenviado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao reenviar e-mail:', err.message);
+    res.status(500).json({ error: 'Erro ao enviar e-mail: ' + err.message });
+  }
+});
+
+router.patch('/users/:id/reactivate', (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+
+    const user = db.prepare(
+      'SELECT * FROM users WHERE id = ? AND is_active = 0'
+    ).get(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário inativo não encontrado' });
+    }
+
+    db.prepare(
+      'UPDATE users SET is_active = 1, updated_at = datetime(\'now\') WHERE id = ?'
+    ).run(userId);
+
+    logAudit(req.user.id, 'ADMIN_REACTIVATE_USER', { targetUserId: userId, targetUser: user.username }, req);
+
+    res.json({ message: 'Usuário reativado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao reativar usuário:', err.message);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

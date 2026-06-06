@@ -267,9 +267,55 @@ async function sendMonthlyReport(user, stats) {
   }
 }
 
+async function sendRegistrationEmail(user, tempPassword) {
+  const subject = 'Cadastro recebido - NotaVault';
+
+  const content = `
+    <h1 style="margin:0 0 16px;font-size:24px;color:#e2e8f0;font-weight:600;">Cadastro Recebido! ✅</h1>
+    <p style="margin:0 0 24px;font-size:15px;color:#94a3b8;line-height:1.6;">
+      Olá <strong style="color:#e2e8f0;">${user.username}</strong>, seu cadastro no NotaVault foi recebido com sucesso.
+      Abaixo estão suas credenciais temporárias para quando sua conta for aprovada.
+    </p>
+    <div style="margin:0 0 24px;padding:20px;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.15);border-radius:8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:4px 0;">
+            <span style="font-size:13px;color:#64748b;">Usuário:</span>
+            <span style="font-size:14px;color:#e2e8f0;font-weight:600;margin-left:8px;">${user.username}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:4px 0;">
+            <span style="font-size:13px;color:#64748b;">Senha temporária:</span>
+            <span style="font-size:14px;color:#00ff88;font-family:'Courier New',monospace;font-weight:700;margin-left:8px;">${tempPassword}</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="margin:0 0 16px;padding:16px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:8px;">
+      <p style="margin:0;font-size:13px;color:#a855f7;">
+        ⓘ Sua conta precisa ser aprovada por um administrador antes que você possa acessar o sistema.
+      </p>
+    </div>
+    <div style="margin:0;padding:16px;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.2);border-radius:8px;">
+      <p style="margin:0;font-size:13px;color:#ff6b35;">
+        ⚠ No primeiro acesso, você será obrigado a alterar a senha temporária.
+      </p>
+    </div>`;
+
+  try {
+    await sendMail(user.email, subject, baseTemplate(subject, content));
+    logEmail(user.id, 'registration', user.email, subject, true, null);
+  } catch (err) {
+    logEmail(user.id, 'registration', user.email, subject, false, err.message);
+    throw err;
+  }
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendApprovalEmail,
+  sendRegistrationEmail,
   sendPasswordResetEmail,
   sendDailyReport,
   sendMonthlyReport,

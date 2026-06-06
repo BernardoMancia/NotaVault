@@ -187,6 +187,8 @@ function setupEventListeners() {
     });
     var modalCloseBtn = modalOverlay.querySelector('.modal-close');
     if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    var modalFooterClose = document.getElementById('btn-close-detail-footer');
+    if (modalFooterClose) modalFooterClose.addEventListener('click', closeModal);
   }
 
   document.querySelectorAll('.sidebar-nav-item').forEach(function(item) {

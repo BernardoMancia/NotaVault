@@ -124,16 +124,15 @@ function renderUsersTable(users) {
     }
     if (u.is_active) {
       actionsWrap.appendChild(makeBtn('Ver Notas', 'btn-secondary btn-sm', function() { viewUserReceipts(u.id, u.username); }));
+      actionsWrap.appendChild(makeBtn('Reenviar Email', 'btn-secondary btn-sm', function() { resendEmail(u.id); }));
       actionsWrap.appendChild(makeBtn('Resetar Senha', 'btn-secondary btn-sm', function() { resetPassword(u.id); }));
       if (u.is_approved) {
         actionsWrap.appendChild(makeBtn('Alterar Email', 'btn-secondary btn-sm', function() { changeEmail(u.id); }));
       }
       actionsWrap.appendChild(makeBtn('Desativar', 'btn-danger btn-sm', function() { deactivateUser(u.id); }));
     } else {
-      var span = document.createElement('span');
-      span.className = 'text-muted';
-      span.textContent = 'Inativo';
-      actionsWrap.appendChild(span);
+      actionsWrap.appendChild(makeBtn('Reativar', 'btn-success btn-sm', function() { reactivateUser(u.id); }));
+      actionsWrap.appendChild(makeBtn('Remover', 'btn-danger btn-sm', function() { deactivateUser(u.id); }));
     }
 
     tdActions.appendChild(actionsWrap);
@@ -213,6 +212,30 @@ function deactivateUser(id) {
       loadStats();
     } catch (err) {
       showToast(err.message || 'Erro ao desativar usuário', 'error');
+    }
+  });
+}
+
+function resendEmail(id) {
+  showConfirm('Reenviar e-mail de credenciais para este usuário?', async function() {
+    try {
+      await api('/api/admin/users/' + id + '/resend-email', { method: 'POST' });
+      showToast('E-mail reenviado com sucesso', 'success');
+    } catch (err) {
+      showToast(err.message || 'Erro ao reenviar e-mail', 'error');
+    }
+  });
+}
+
+function reactivateUser(id) {
+  showConfirm('Reativar este usuário?', async function() {
+    try {
+      await api('/api/admin/users/' + id + '/reactivate', { method: 'PATCH' });
+      showToast('Usuário reativado com sucesso', 'success');
+      loadUsers(getCurrentFilter());
+      loadStats();
+    } catch (err) {
+      showToast(err.message || 'Erro ao reativar usuário', 'error');
     }
   });
 }

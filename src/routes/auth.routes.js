@@ -6,7 +6,7 @@ const { db } = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
 const { loginValidator, registerValidator, passwordValidator } = require('../middleware/validators');
 const { validatePasswordStrength, generateTempPassword } = require('../utils/password');
-const { sendWelcomeEmail, sendPasswordResetEmail } = require('../services/email.service');
+const { sendWelcomeEmail, sendRegistrationEmail, sendPasswordResetEmail } = require('../services/email.service');
 const { decryptSecret, verifyToken, verifyBackupCode } = require('../services/mfa.service');
 
 const router = express.Router();
@@ -176,12 +176,7 @@ router.post('/mfa/verify', async (req, res) => {
 
 router.post('/register-request', registerValidator, async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    const strengthResult = validatePasswordStrength(password);
-    if (!strengthResult.valid) {
-      return res.status(400).json({ error: strengthResult.message });
-    }
+    const { username, email } = req.body;
 
     const existingUser = db.prepare(
       'SELECT id FROM users WHERE username = ? OR email = ?'
@@ -191,23 +186,23 @@ router.post('/register-request', registerValidator, async (req, res) => {
       return res.status(409).json({ error: 'Usuário ou e-mail já cadastrado' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
-    const confirmToken = crypto.randomBytes(32).toString('hex');
+    const tempPassword = generateTempPassword();
+    const passwordHash = await bcrypt.hash(tempPassword, 12);
 
     const result = db.prepare(
-      'INSERT INTO users (username, email, password_hash, role, is_approved, is_active, force_password_change, email_confirm_token, created_at, updated_at) VALUES (?, ?, ?, \'user\', 0, 1, 0, ?, datetime(\'now\'), datetime(\'now\'))'
-    ).run(username, email, passwordHash, confirmToken);
+      'INSERT INTO users (username, email, password_hash, role, is_approved, is_active, force_password_change, temp_password, created_at, updated_at) VALUES (?, ?, ?, \'user\', 0, 1, 1, ?, datetime(\'now\'), datetime(\'now\'))'
+    ).run(username, email, passwordHash, tempPassword);
 
     const newUser = { id: result.lastInsertRowid, username, email };
 
     try {
-      await sendWelcomeEmail(newUser, confirmToken, getBaseUrl(req));
+      await sendRegistrationEmail(newUser, tempPassword);
     } catch (_) {}
 
     logAudit(newUser.id, 'REGISTER_REQUEST', { username, email }, req);
 
     res.status(201).json({
-      message: 'Solicitação de cadastro enviada. Verifique seu e-mail para confirmar e aguarde a aprovação do administrador.',
+      message: 'Cadastro realizado! Suas credenciais foram enviadas para o e-mail informado. Aguarde a aprovação do administrador.',
     });
   } catch (err) {
     console.error('Erro no registro:', err.message);

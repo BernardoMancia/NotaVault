@@ -36,17 +36,6 @@ const registerValidator = [
     .isEmail()
     .withMessage('E-mail inválido')
     .normalizeEmail(),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Senha deve ter no mínimo 8 caracteres')
-    .matches(/[A-Z]/)
-    .withMessage('Senha deve conter pelo menos uma letra maiúscula')
-    .matches(/[a-z]/)
-    .withMessage('Senha deve conter pelo menos uma letra minúscula')
-    .matches(/[0-9]/)
-    .withMessage('Senha deve conter pelo menos um dígito')
-    .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
-    .withMessage('Senha deve conter pelo menos um caractere especial'),
   validate
 ];
 

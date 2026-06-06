@@ -226,33 +226,16 @@
     var form = document.getElementById('register-form');
     if (!form) return;
 
-    setupPasswordToggles();
-
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var btn = document.getElementById('register-btn');
       var name = document.getElementById('reg-name').value.trim();
       var username = document.getElementById('reg-username').value.trim();
       var email = document.getElementById('reg-email').value.trim();
-      var password = document.getElementById('reg-password').value;
-      var confirmPassword = document.getElementById('reg-confirm-password').value;
 
-      if (!name || !username || !email || !password || !confirmPassword) {
+      if (!name || !username || !email) {
         showToast('Preencha todos os campos', 'warning');
         return;
-      }
-
-      if (password !== confirmPassword) {
-        showToast('As senhas não coincidem', 'error');
-        return;
-      }
-
-      if (typeof evaluatePassword === 'function') {
-        var result = evaluatePassword(password);
-        if (result.score < 3) {
-          showToast('A senha não atende aos requisitos mínimos', 'error');
-          return;
-        }
       }
 
       btn.disabled = true;
@@ -263,8 +246,7 @@
         body: {
           name: name,
           username: username,
-          email: email,
-          password: password
+          email: email
         }
       }).then(function() {
         form.style.display = 'none';

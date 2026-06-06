@@ -38,8 +38,7 @@ async function sendMail(to, subject, html, userId, emailType) {
       `);
       stmt.run(userId, emailType, to, subject, sentAt, error.message);
     }
-
-    return { success: false, error: error.message };
+    throw error;
   }
 }
 
