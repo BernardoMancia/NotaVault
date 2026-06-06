@@ -752,7 +752,22 @@ async function openDetail(id) {
     if (!modal) return;
 
     var detailImage = document.getElementById('detail-image');
-    if (detailImage) detailImage.src = '/api/receipts/' + id + '/image';
+    if (detailImage) {
+      detailImage.src = '';
+      detailImage.alt = 'Carregando imagem...';
+      var token = localStorage.getItem('token');
+      fetch('/api/receipts/' + id + '/image', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }).then(function(imgRes) {
+        if (imgRes.ok) return imgRes.blob();
+        throw new Error('Imagem não disponível');
+      }).then(function(blob) {
+        detailImage.src = URL.createObjectURL(blob);
+        detailImage.alt = 'Imagem da nota';
+      }).catch(function() {
+        detailImage.alt = 'Imagem não disponível';
+      });
+    }
 
     var detailStore = document.getElementById('detail-store');
     if (detailStore) detailStore.textContent = receipt.store_name || 'Não identificado';

@@ -97,6 +97,15 @@
         method: 'POST',
         body: { username: username, password: password }
       }).then(function(data) {
+        if (data.mfa_required) {
+          mfaToken = data.mfa_token;
+          form.style.display = 'none';
+          document.getElementById('mfa-step').classList.remove('hidden');
+          var firstInput = document.querySelector('#mfa-inputs input');
+          if (firstInput) firstInput.focus();
+          return;
+        }
+
         if (data.force_password_change) {
           setToken(data.token);
           window.location.href = '/change-password';
@@ -106,7 +115,6 @@
         setToken(data.token);
         showToast('Login realizado com sucesso!', 'success');
 
-        var user = getUser();
         setTimeout(function() {
           window.location.href = '/dashboard';
         }, 500);
