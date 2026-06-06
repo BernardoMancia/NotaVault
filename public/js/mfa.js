@@ -247,7 +247,7 @@ function disableMfa() {
   }).then(function() {
     showToast('MFA desativado com sucesso.', 'success');
     setTimeout(function() {
-      window.location.href = '/dashboard.html';
+      window.location.href = '/dashboard';
     }, 1500);
   }).catch(function(err) {
     showToast(err.message || 'Erro ao desativar MFA.', 'error');

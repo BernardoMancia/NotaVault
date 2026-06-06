@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   redirectIfNotAuthenticated();
   const user = getUser();
   if (!user || user.role !== 'admin') {
-    window.location.href = 'index.html';
+    window.location.href = '/login';
     return;
   }
   document.getElementById('sidebar-username').textContent = user.username;

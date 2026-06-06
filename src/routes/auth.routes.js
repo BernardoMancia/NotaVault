@@ -249,9 +249,21 @@ router.post('/change-password', authenticateToken, passwordValidator, async (req
       'UPDATE users SET password_hash = ?, force_password_change = 0, temp_password = NULL, updated_at = datetime(\'now\') WHERE id = ?'
     ).run(newHash, userId);
 
+    const newToken = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        mfa_verified: true,
+        force_password_change: false,
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
     logAudit(userId, 'PASSWORD_CHANGED', null, req);
 
-    res.json({ message: 'Senha alterada com sucesso' });
+    res.json({ message: 'Senha alterada com sucesso', token: newToken });
   } catch (err) {
     console.error('Erro ao alterar senha:', err.message);
     res.status(500).json({ error: 'Erro interno do servidor' });

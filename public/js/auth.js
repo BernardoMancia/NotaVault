@@ -99,7 +99,7 @@
       }).then(function(data) {
         if (data.force_password_change) {
           setToken(data.token);
-          window.location.href = '/change-password.html';
+          window.location.href = '/change-password';
           return;
         }
 
@@ -109,9 +109,9 @@
         var user = getUser();
         setTimeout(function() {
           if (user && user.role === 'admin') {
-            window.location.href = '/admin.html';
+            window.location.href = '/admin';
           } else {
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard';
           }
         }, 500);
       }).catch(function(err) {
@@ -152,9 +152,9 @@
           var user = getUser();
           setTimeout(function() {
             if (user && user.role === 'admin') {
-              window.location.href = '/admin.html';
+              window.location.href = '/admin';
             } else {
-              window.location.href = '/dashboard.html';
+              window.location.href = '/dashboard';
             }
           }, 500);
         }).catch(function(err) {
@@ -211,9 +211,9 @@
           var user = getUser();
           setTimeout(function() {
             if (user && user.role === 'admin') {
-              window.location.href = '/admin.html';
+              window.location.href = '/admin';
             } else {
-              window.location.href = '/dashboard.html';
+              window.location.href = '/dashboard';
             }
           }, 500);
         }).catch(function(err) {
@@ -328,9 +328,9 @@
         setTimeout(function() {
           var user = getUser();
           if (user && user.role === 'admin') {
-            window.location.href = '/admin.html';
+            window.location.href = '/admin';
           } else {
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard';
           }
         }, 1000);
       }).catch(function(err) {
@@ -345,15 +345,15 @@
   document.addEventListener('DOMContentLoaded', function() {
     var path = window.location.pathname;
 
-    if (path === '/' || path.indexOf('index.html') !== -1) {
+    if (path === '/' || path.indexOf('index') !== -1 || path === '/login') {
       handleLoginPage();
     }
 
-    if (path.indexOf('register.html') !== -1) {
+    if (path.indexOf('register') !== -1) {
       handleRegisterPage();
     }
 
-    if (path.indexOf('change-password.html') !== -1) {
+    if (path.indexOf('change-password') !== -1) {
       handleChangePasswordPage();
     }
   });

@@ -26,8 +26,23 @@ app.use('/api/admin', require('./src/routes/admin.routes'));
 app.use('/api/receipts', require('./src/routes/receipts.routes'));
 app.use('/api/user', require('./src/routes/user.routes'));
 
+const cleanRoutes = {
+  '/login': 'index.html',
+  '/register': 'register.html',
+  '/dashboard': 'dashboard.html',
+  '/admin': 'admin.html',
+  '/change-password': 'change-password.html',
+  '/mfa-setup': 'mfa-setup.html',
+};
+
+Object.entries(cleanRoutes).forEach(([route, file]) => {
+  app.get(route, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', file));
+  });
+});
+
 app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
+  if (!req.path.startsWith('/api') && !req.path.includes('.')) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   }
 });

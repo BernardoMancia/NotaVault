@@ -59,13 +59,13 @@ function api(endpoint, options) {
   return fetch(API_BASE + endpoint, options).then(function(res) {
     if (res.status === 401) {
       clearToken();
-      window.location.href = '/index.html';
+      window.location.href = '/login';
       return Promise.reject(new Error('Sessão expirada'));
     }
 
     return res.json().then(function(data) {
       if (res.status === 403 && data.force_password_change) {
-        window.location.href = '/change-password.html';
+        window.location.href = '/change-password';
         return Promise.reject(new Error('Alteração de senha necessária'));
       }
 
@@ -146,7 +146,7 @@ function formatDateTime(dateStr) {
 function redirectIfNotAuthenticated() {
   if (!isAuthenticated()) {
     clearToken();
-    window.location.href = '/index.html';
+    window.location.href = '/login';
     return true;
   }
   return false;
@@ -156,9 +156,9 @@ function redirectIfAuthenticated() {
   if (isAuthenticated()) {
     var user = getUser();
     if (user && user.role === 'admin') {
-      window.location.href = '/admin.html';
+      window.location.href = '/admin';
     } else {
-      window.location.href = '/dashboard.html';
+      window.location.href = '/dashboard';
     }
     return true;
   }
@@ -170,7 +170,7 @@ function checkForcePasswordChange() {
   if (user && user.force_password_change) {
     var currentPage = window.location.pathname;
     if (currentPage.indexOf('change-password') === -1) {
-      window.location.href = '/change-password.html';
+      window.location.href = '/change-password';
       return true;
     }
   }
@@ -198,7 +198,7 @@ function escapeHtml(str) {
 
 document.addEventListener('DOMContentLoaded', function() {
   var path = window.location.pathname;
-  var protectedPages = ['/dashboard.html', '/admin.html', '/mfa-setup.html'];
+  var protectedPages = ['/dashboard', '/admin', '/mfa-setup', '/dashboard.html', '/admin.html', '/mfa-setup.html'];
   var isProtected = protectedPages.some(function(p) { return path.indexOf(p) !== -1; });
 
   if (isProtected) {
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.sidebar-logout').forEach(function(btn) {
     btn.addEventListener('click', function() {
       clearToken();
-      window.location.href = '/index.html';
+      window.location.href = '/login';
     });
   });
 
