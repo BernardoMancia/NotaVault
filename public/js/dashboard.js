@@ -239,6 +239,7 @@ function setupEventListeners() {
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+      closeLightbox();
       closeModal();
       closeCamera();
     }
@@ -856,6 +857,37 @@ async function openDetail(id) {
 function closeModal() {
   var modal = document.getElementById('detail-modal');
   if (modal) modal.classList.remove('active');
+}
+
+function expandImage() {
+  var img = document.getElementById('detail-image');
+  if (!img || !img.src || img.src === window.location.href) return;
+  var lightbox = document.getElementById('image-lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+  if (lightbox && lbImg) {
+    lbImg.src = img.src;
+    lightbox.style.display = 'flex';
+  }
+}
+
+function closeLightbox() {
+  var lightbox = document.getElementById('image-lightbox');
+  if (lightbox) lightbox.style.display = 'none';
+}
+
+function downloadImage() {
+  var img = document.getElementById('detail-image');
+  if (!img || !img.src || img.src === window.location.href) {
+    showToast('Nenhuma imagem disponível', 'error');
+    return;
+  }
+  var a = document.createElement('a');
+  a.href = img.src;
+  a.download = 'nota-fiscal.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('Download iniciado!', 'success');
 }
 
 async function deleteReceipt(id) {

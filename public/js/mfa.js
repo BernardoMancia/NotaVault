@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkMfaStatus() {
-  api('/api/user/mfa/status').then(function(data) {
+  api('/api/user/mfa/status').then(function(response) {
+    var data = response.data || response;
     if (data.mfa_enabled) {
       document.getElementById('step-indicator').classList.add('hidden');
       document.getElementById('mfa-step-1').classList.add('hidden');
@@ -106,9 +107,10 @@ function goToStep(step) {
 }
 
 function initSetup() {
-  api('/api/user/mfa/setup', { method: 'POST' }).then(function(data) {
+  api('/api/user/mfa/setup', { method: 'POST' }).then(function(response) {
+    var data = response.data || response;
     mfaSecret = data.secret;
-    document.getElementById('qr-container').innerHTML = '<img src="' + data.qrCode + '" alt="QR Code MFA">';
+    document.getElementById('qr-container').innerHTML = '<img src="' + data.qrCode + '" alt="QR Code MFA" style="max-width:200px;border-radius:8px;">';
     document.getElementById('mfa-secret-text').textContent = data.secret;
   }).catch(function(err) {
     showToast(err.message || 'Erro ao iniciar configuração MFA', 'error');
@@ -167,8 +169,9 @@ function activateMfa() {
 
   api('/api/user/mfa/enable', {
     method: 'POST',
-    body: { token: code }
-  }).then(function(data) {
+    body: { token: code, secret: mfaSecret }
+  }).then(function(response) {
+    var data = response.data || response;
     backupCodes = data.backupCodes;
     document.getElementById('mfa-step-3').classList.add('hidden');
     document.getElementById('step-indicator').classList.add('hidden');
@@ -255,7 +258,8 @@ function disableMfa() {
 }
 
 function regenerateBackupCodes() {
-  api('/api/user/mfa/backup-codes').then(function(data) {
+  api('/api/user/mfa/backup-codes').then(function(response) {
+    var data = response.data || response;
     backupCodes = data.backupCodes;
     var display = document.getElementById('regen-codes-display');
     display.innerHTML = '';

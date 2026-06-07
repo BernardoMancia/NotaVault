@@ -653,7 +653,25 @@
       <div class="modal-body">
         <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
           <div style="flex: 0 0 280px;">
-            <img id="detail-image" src="" alt="Imagem da nota" style="width: 100%; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-card);">
+            <div id="detail-image-wrap" style="position:relative;border-radius:var(--radius);border:1px solid var(--border-color);background:var(--bg-card);overflow:hidden;cursor:pointer;" onclick="expandImage()">
+              <img id="detail-image" src="" alt="Imagem da nota" style="width:100%;display:block;min-height:120px;object-fit:contain;background:rgba(0,0,0,0.3);">
+              <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:0.5rem;padding:0.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+                <button type="button" class="btn btn-sm btn-outline" onclick="event.stopPropagation();expandImage()" title="Expandir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                    <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                    <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                  </svg>
+                  Expandir
+                </button>
+                <button type="button" class="btn btn-sm btn-outline" id="btn-download-image" onclick="event.stopPropagation();downloadImage()" title="Baixar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Baixar
+                </button>
+              </div>
+            </div>
           </div>
           <div style="flex: 1; min-width: 240px;">
             <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.875rem; margin-bottom: 1.25rem;">
@@ -697,6 +715,24 @@
           Fechar
         </button>
       </div>
+    </div>
+  </div>
+
+  <div id="image-lightbox" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);align-items:center;justify-content:center;cursor:zoom-out;padding:1rem;" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Imagem expandida" style="max-width:95vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 0 60px rgba(0,0,0,0.5);">
+    <div style="position:absolute;top:1rem;right:1rem;display:flex;gap:0.5rem;">
+      <button type="button" class="btn btn-sm btn-outline" onclick="event.stopPropagation();downloadImage()" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Baixar
+      </button>
+      <button type="button" class="btn btn-sm btn-outline" onclick="closeLightbox()" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Fechar
+      </button>
     </div>
   </div>
 
