@@ -41,8 +41,8 @@ const registerValidator = [
 
 const passwordValidator = [
   body('new_password')
-    .isLength({ min: 8 })
-    .withMessage('Nova senha deve ter no mínimo 8 caracteres')
+    .isLength({ min: 12 })
+    .withMessage('Nova senha deve ter no mínimo 12 caracteres')
     .matches(/[A-Z]/)
     .withMessage('Nova senha deve conter pelo menos uma letra maiúscula')
     .matches(/[a-z]/)

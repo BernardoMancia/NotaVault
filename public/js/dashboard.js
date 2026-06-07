@@ -284,11 +284,11 @@ function openCamera() {
     showToast('Erro ao acessar câmera: ' + err.message, 'error');
   });
 
-  var captureBtn = document.getElementById('camera-capture');
+  var captureBtn = document.getElementById('btn-capture');
   if (captureBtn) {
     captureBtn.onclick = capturePhoto;
   }
-  var closeBtn = document.getElementById('camera-close');
+  var closeBtn = document.getElementById('btn-close-camera');
   if (closeBtn) {
     closeBtn.onclick = closeCamera;
   }
@@ -775,7 +775,7 @@ async function openDetail(id) {
     if (detailImage) {
       detailImage.src = '';
       detailImage.alt = 'Carregando imagem...';
-      var token = localStorage.getItem('token');
+      var token = localStorage.getItem('notavault_token');
       fetch('/api/receipts/' + id + '/image', {
         headers: { 'Authorization': 'Bearer ' + token }
       }).then(function(imgRes) {
@@ -969,8 +969,8 @@ async function handleChangePassword() {
     return;
   }
 
-  if (newPwd.value.length < 8) {
-    showToast('A nova senha deve ter pelo menos 8 caracteres', 'error');
+  if (newPwd.value.length < 12) {
+    showToast('A nova senha deve ter pelo menos 12 caracteres', 'error');
     return;
   }
 

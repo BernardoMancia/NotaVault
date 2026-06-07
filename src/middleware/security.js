@@ -20,7 +20,10 @@ const helmetMiddleware = helmet({
       upgradeInsecureRequests: null
     }
   },
-  hsts: false,
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true
+  },
   crossOriginEmbedderPolicy: false,
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 });
@@ -49,12 +52,20 @@ const uploadLimiter = rateLimit({
   message: { error: 'Limite de uploads atingido. Tente novamente em 1 hora.' }
 });
 
+const ALLOWED_ORIGINS = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
+  : [];
+
 const corsMiddleware = cors({
   origin: function (origin, callback) {
+    // Allow same-origin requests (no origin header = same origin or non-browser clients)
     if (!origin) {
       return callback(null, true);
     }
-    callback(null, true);
+    if (ALLOWED_ORIGINS.length > 0 && ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error('Origem não permitida pelo CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

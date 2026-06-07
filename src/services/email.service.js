@@ -305,9 +305,9 @@ async function sendRegistrationEmail(user, tempPassword) {
 
   try {
     await sendMail(user.email, subject, baseTemplate(subject, content));
-    logEmail(user.id, 'registration', user.email, subject, true, null);
+    logEmail(user.id, 'welcome', user.email, subject, true, null);
   } catch (err) {
-    logEmail(user.id, 'registration', user.email, subject, false, err.message);
+    logEmail(user.id, 'welcome', user.email, subject, false, err.message);
     throw err;
   }
 }

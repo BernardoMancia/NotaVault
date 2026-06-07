@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const { db } = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
 const { loginValidator, registerValidator, passwordValidator } = require('../middleware/validators');
+const { loginLimiter } = require('../middleware/security');
 const { validatePasswordStrength, generateTempPassword } = require('../utils/password');
 const { sendWelcomeEmail, sendRegistrationEmail, sendPasswordResetEmail } = require('../services/email.service');
 const { decryptSecret, verifyToken, verifyBackupCode } = require('../services/mfa.service');
@@ -32,7 +33,7 @@ function logAudit(userId, action, details, req) {
   } catch (_) {}
 }
 
-router.post('/login', loginValidator, async (req, res) => {
+router.post('/login', loginLimiter, loginValidator, async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -235,7 +236,7 @@ router.post('/change-password', authenticateToken, passwordValidator, async (req
 
     const strengthResult = validatePasswordStrength(new_password);
     if (!strengthResult.valid) {
-      return res.status(400).json({ error: strengthResult.message });
+      return res.status(400).json({ error: strengthResult.errors.join('. ') });
     }
 
     const newHash = await bcrypt.hash(new_password, 12);
@@ -283,7 +284,7 @@ router.post('/reset-password', async (req, res) => {
 
     const strengthResult = validatePasswordStrength(new_password);
     if (!strengthResult.valid) {
-      return res.status(400).json({ error: strengthResult.message });
+      return res.status(400).json({ error: strengthResult.errors.join('. ') });
     }
 
     const newHash = await bcrypt.hash(new_password, 12);

@@ -590,23 +590,23 @@
               </div>
               <div class="password-meter-label" id="settings-password-strength"></div>
               <div class="password-requirements" id="settings-password-requirements">
-                <div class="password-requirement" data-req="length">
+                <div class="password-requirement" data-check="length">
                   <span class="password-requirement-icon">○</span>
-                  <span>Mínimo de 8 caracteres</span>
+                  <span>Mínimo de 12 caracteres</span>
                 </div>
-                <div class="password-requirement" data-req="uppercase">
+                <div class="password-requirement" data-check="uppercase">
                   <span class="password-requirement-icon">○</span>
                   <span>Uma letra maiúscula</span>
                 </div>
-                <div class="password-requirement" data-req="lowercase">
+                <div class="password-requirement" data-check="lowercase">
                   <span class="password-requirement-icon">○</span>
                   <span>Uma letra minúscula</span>
                 </div>
-                <div class="password-requirement" data-req="number">
+                <div class="password-requirement" data-check="digit">
                   <span class="password-requirement-icon">○</span>
                   <span>Um número</span>
                 </div>
-                <div class="password-requirement" data-req="special">
+                <div class="password-requirement" data-check="special">
                   <span class="password-requirement-icon">○</span>
                   <span>Um caractere especial (!@#$%^&*)</span>
                 </div>
@@ -739,6 +739,14 @@
   <div class="toast-container" id="toast-container"></div>
 
   <script src="/js/app.js"></script>
+  <script src="/js/password-strength.js"></script>
   <script src="/js/dashboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (document.getElementById('settings-new-password')) {
+        initPasswordStrength('settings-new-password', 'settings-password-meter', 'settings-password-strength', 'settings-password-requirements');
+      }
+    });
+  </script>
 </body>
 </html>
