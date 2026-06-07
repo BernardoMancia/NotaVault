@@ -92,10 +92,13 @@ async function loadStats() {
 async function loadMfaStatus() {
   try {
     var res = await api('/api/user/mfa/status');
+    var mfaEnabled = res.data && res.data.mfa_enabled;
     var badge = document.getElementById('mfa-badge');
     var mfaUserStatus = document.querySelector('.sidebar-user-mfa');
+    var settingsBadge = document.getElementById('settings-mfa-status');
+    var setupBtn = document.getElementById('btn-setup-mfa');
 
-    if (res.data && res.data.mfa_enabled) {
+    if (mfaEnabled) {
       if (badge) {
         badge.style.display = 'inline-flex';
         badge.classList.add('text-green');
@@ -104,11 +107,25 @@ async function loadMfaStatus() {
         mfaUserStatus.classList.add('active');
         mfaUserStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> MFA Ativo';
       }
+      if (settingsBadge) {
+        settingsBadge.className = 'badge badge-green';
+        settingsBadge.textContent = 'Ativado';
+      }
+      if (setupBtn) {
+        setupBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Gerenciar MFA';
+      }
     } else {
       if (badge) badge.style.display = 'none';
       if (mfaUserStatus) {
         mfaUserStatus.classList.remove('active');
         mfaUserStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> MFA Inativo';
+      }
+      if (settingsBadge) {
+        settingsBadge.className = 'badge badge-red';
+        settingsBadge.textContent = 'Desativado';
+      }
+      if (setupBtn) {
+        setupBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Configurar MFA';
       }
     }
   } catch (_) {}
