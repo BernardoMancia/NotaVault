@@ -268,8 +268,13 @@ function openCamera() {
   var video = document.getElementById('camera-video');
   if (!overlay || !video) return;
 
+  if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+    showToast('A câmera requer conexão HTTPS. Use "Enviar Foto" para selecionar uma imagem.', 'warning');
+    return;
+  }
+
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    showToast('Câmera não suportada neste navegador', 'error');
+    showToast('Câmera não suportada neste navegador. Use "Enviar Foto" para selecionar uma imagem.', 'error');
     return;
   }
 

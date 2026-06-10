@@ -62,7 +62,12 @@ const corsMiddleware = cors({
     if (!origin) {
       return callback(null, true);
     }
-    if (ALLOWED_ORIGINS.length > 0 && ALLOWED_ORIGINS.includes(origin)) {
+    // If CORS_ORIGINS is not configured, allow all origins (same as before)
+    if (ALLOWED_ORIGINS.length === 0) {
+      return callback(null, true);
+    }
+    // If configured, only allow listed origins
+    if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
     callback(new Error('Origem não permitida pelo CORS'));
